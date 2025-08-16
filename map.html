@@ -479,6 +479,43 @@
         playPauseBtn.textContent = 'Play Music';
       }
     });
+
+    // === Integrasi Google Sheets ===
+// Ganti dengan URL API dari sheet.best
+const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
+
+// Override data dari Google Sheets
+fetch(SHEET_API)
+  .then(res => res.json())
+  .then(data => {
+    data.forEach(row => {
+      const zoneId = parseInt(row.Zone.replace("zona",""));
+      if (!zoneId) return;
+
+      // Update zoneData jika ada data baru
+      zoneData[zoneId] = {
+        club: row.Owner || zoneData[zoneId]?.club,
+        logo: row.LogoMap || zoneData[zoneId]?.logo,
+        track: row.TrackMap || zoneData[zoneId]?.track,
+        name: row.TrackName || zoneData[zoneId]?.name,
+        length: row.Length || zoneData[zoneId]?.length,
+        laps: row.Rounds || zoneData[zoneId]?.laps,
+        record: row.Record || zoneData[zoneId]?.record,
+        cash: row.Cash || zoneData[zoneId]?.cash,
+      };
+
+      // Update logo di map
+      const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
+      if (el && row.LogoMap) el.src = row.LogoMap;
+
+      // Update main map kalau ada
+      if (row.MainMap) {
+        document.querySelector("#main-map").src = row.MainMap;
+      }
+    });
+  })
+  .catch(err => console.error("Gagal fetch data dari Sheets:", err));
+
   </script>
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
 </body>
