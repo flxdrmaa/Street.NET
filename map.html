@@ -480,7 +480,7 @@
       }
     });
 
-   // === Integrasi Google Sheets ===
+// === Integrasi Google Sheets ===
 // Ganti dengan URL API dari sheet.best
 const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
@@ -488,37 +488,38 @@ fetch(SHEET_API)
   .then(res => res.json())
   .then(data => {
     data.forEach(row => {
-      const zoneId = parseInt(row.Zone.match(/\d+/)); 
+      const zoneId = parseInt(row.Zone?.match(/\d+/)); 
       if (!zoneId) return;
 
-      // replace total dengan sheet (kalau ada isinya)
+      // Replace total kalau ada isinya, fallback ke default kalau kosong
       zoneData[zoneId] = {
-        club: row.Owner || zoneData[zoneId]?.club,
-        logo: row.LogoMap || zoneData[zoneId]?.logo,
-        track: row.TrackMap || zoneData[zoneId]?.track,
-        name: row.TrackName || zoneData[zoneId]?.name,
+        club:   row.Owner   || zoneData[zoneId]?.club,
+        logo:   row.LogoMap || zoneData[zoneId]?.logo,
+        track:  row.TrackMap || zoneData[zoneId]?.track,
+        name:   row.TrackName || zoneData[zoneId]?.name,
         length: row.Length || zoneData[zoneId]?.length,
-        laps: row.Rounds || zoneData[zoneId]?.laps,
+        laps:   row.Rounds || zoneData[zoneId]?.laps,
         record: row.Record || zoneData[zoneId]?.record,
-        cash: row.Cash || zoneData[zoneId]?.cash,
+        cash:   row.Cash || zoneData[zoneId]?.cash,
       };
 
-      // update logo di map (langsung replace kalau ada di sheet)
+      // Update logo di map (kalau sheet punya data baru)
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
       if (el && row.LogoMap) el.src = row.LogoMap;
 
-      // update main map kalau ada
+      // Update main map (kalau sheet punya data baru)
       if (row.MainMap) {
-        document.querySelector("#main-map").src = row.MainMap;
+        const mainMapEl = document.querySelector("#main-map");
+        if (mainMapEl) mainMapEl.src = row.MainMap;
       }
     });
   })
   .catch(err => console.error("Gagal fetch data dari Sheets:", err));
-
   </script>
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
 </body>
 </html>
+
 
 
 
