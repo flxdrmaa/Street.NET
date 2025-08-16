@@ -480,7 +480,7 @@
       }
     });
 
-    // === Integrasi Google Sheets ===
+   // === Integrasi Google Sheets ===
 // Ganti dengan URL API dari sheet.best
 const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
@@ -489,10 +489,12 @@ fetch(SHEET_API)
   .then(res => res.json())
   .then(data => {
     data.forEach(row => {
-      const zoneId = parseInt(row.Zone.replace("zona",""));
-      if (!zoneId) return;
+      if (!row.Zone) return; // skip kalau kosong
+      const match = row.Zone.match(/\d+/);
+      if (!match) return;
+      const zoneId = parseInt(match[0]);
 
-      // Update zoneData jika ada data baru
+      // timpa hanya kalau ada nilai di sheet
       zoneData[zoneId] = {
         club: row.Owner || zoneData[zoneId]?.club,
         logo: row.LogoMap || zoneData[zoneId]?.logo,
@@ -510,14 +512,17 @@ fetch(SHEET_API)
 
       // Update main map kalau ada
       if (row.MainMap) {
-        document.querySelector("#main-map").src = row.MainMap;
+        const mainMapEl = document.querySelector("#main-map");
+        if (mainMapEl) mainMapEl.src = row.MainMap;
       }
     });
   })
   .catch(err => console.error("Gagal fetch data dari Sheets:", err));
 
+
   </script>
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
 </body>
 </html>
+
 
