@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel Territory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { font-family: "Segoe UI", sans-serif; background: #1e1e2f; color: #eee; margin:0; padding:0; }
+    .container { max-width: 700px; margin: 40px auto; padding: 20px; }
+    .card { background: #2a2a40; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+    h2 { margin-top: 0; text-align: center; }
+    label { display: block; margin: 12px 0 6px; font-weight: bold; }
+    select, input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #555; margin-bottom: 10px; font-size: 15px; background: #333; color: #eee; }
+    .preview { margin-bottom: 15px; text-align: center; }
+    .preview img { max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #555; }
+    button.save-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; background: #4f46e5; color: #fff; font-size: 16px; cursor: pointer; }
+    button.save-btn:hover { background: #3730a3; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h2>Admin Panel Territory</h2>
+      <form id="adminForm">
+        <label for="territory">Pilih Territory</label>
+        <select id="territory">
+          <option value="Zone 1">Downtown</option>
+          <option value="Zone 2">Juniper Hill</option>
+          <option value="Zone 3">Ocean Flat</option>
+          <option value="Zone 4">Easter Bay</option>
+          <option value="Zone 5">Foster Faley</option>
+          <option value="Zone 6">Emerald Isle</option>
+          <option value="Zone 7">Red Sands</option>
+          <option value="Zone 8">Linden Station</option>
+          <option value="Zone 9">Old Venturas Strip</option>
+          <option value="Zone 10">Blueberry</option>
+          <option value="Zone 11">Ocean Docks</option>
+        </select>
+
+        <label for="name">Nama Pemilik</label>
+        <input type="text" id="name" placeholder="Masukkan nama pemilik">
+
+        <label for="logoMap">Link Logo (Map)</label>
+        <input type="url" id="logoMap" placeholder="https://contoh.com/logo.png" oninput="previewImage(this, 'logoMapPreview')">
+        <div class="preview"><img id="logoMapPreview" alt="Preview Logo Map" style="display:none;"></div>
+
+        <label for="logoInfo">Link Logo (InfoBox)</label>
+        <input type="url" id="logoInfo" placeholder="https://contoh.com/logo.png" oninput="previewImage(this, 'logoInfoPreview')">
+        <div class="preview"><img id="logoInfoPreview" alt="Preview Logo Info" style="display:none;"></div>
+
+        <label for="mainMap">Link Map Utama</label>
+        <input type="url" id="mainMap" placeholder="https://contoh.com/map.png" oninput="previewImage(this, 'mainMapPreview')">
+        <div class="preview"><img id="mainMapPreview" alt="Preview Map Utama" style="display:none;"></div>
+
+        <button type="submit" class="save-btn">💾 Simpan</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // GANTI URL INI dengan endpoint dari sheet.best setelah connect Google Sheets
+    const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
+
+    function previewImage(input, previewId) {
+      const img = document.getElementById(previewId);
+      if (input.value) {
+        img.src = input.value;
+        img.style.display = "block";
+      } else {
+        img.style.display = "none";
+      }
+    }
+
+    document.getElementById("adminForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const zone   = document.getElementById("territory").value;
+      const owner  = document.getElementById("name").value;
+      const logoM  = document.getElementById("logoMap").value;
+      const logoI  = document.getElementById("logoInfo").value;
+      const mainM  = document.getElementById("mainMap").value;
+
+      fetch(SHEET_API + "/Zone/" + zone, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          Owner: owner,
+          LogoMap: logoM,
+          LogoInfo: logoI,
+          MainMap: mainM
+        })
+      })
+      .then(res => res.json())
+      .then(() => alert("✅ Data berhasil disimpan ke Google Sheets!"))
+      .catch(err => alert("❌ Gagal simpan: " + err));
+    });
+  </script>
+</body>
+</html>
