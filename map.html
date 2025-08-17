@@ -481,19 +481,23 @@
     });
 
 // === Integrasi Google Sheets ===
-// Ganti dengan URL API dari sheet.best
 const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
 fetch(SHEET_API)
   .then(res => res.json())
   .then(data => {
+    if (!data || data.length === 0) {
+      console.log("📂 Sheet kosong → pakai default zoneData.");
+      return; // langsung keluar, tidak update apa-apa
+    }
+
     data.forEach(row => {
-      // Ambil nomor zone → support "Zone 1", "zona1", "ZONE 1", dll
       const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
       if (!zoneId) return;
 
-      // Update zoneData hanya kalau kolom di sheet ada isinya
+      // Override hanya kalau di sheet ada isinya
       zoneData[zoneId] = {
+        ...zoneData[zoneId],
         club: row.Owner || zoneData[zoneId]?.club,
         logo: row.LogoMap || zoneData[zoneId]?.logo,
         info: row.LogoInfo || zoneData[zoneId]?.info,
@@ -503,7 +507,7 @@ fetch(SHEET_API)
         record: row.Record || zoneData[zoneId]?.record,
         cash: row.Cash || zoneData[zoneId]?.cash,
 
-        // Track selalu pakai dari kode asli (tidak override sheet)
+        // Track tetap dari kode (tidak override sheet)
         track: zoneData[zoneId]?.track,
       };
 
@@ -515,12 +519,12 @@ fetch(SHEET_API)
           el.style.display = "block";
         } else {
           el.removeAttribute("src");
-          el.style.display = "none"; // sembunyikan kalau kosong
+          el.style.display = "none";
         }
       }
     });
 
-    // Update main map (ambil salah satu baris yang ada isinya)
+    // Update main map kalau ada
     const mainMapRow = data.find(r => r.MainMap);
     if (mainMapRow) {
       const mainMapEl = document.querySelector("#main-map");
@@ -529,13 +533,6 @@ fetch(SHEET_API)
   })
   .catch(err => {
     console.error("⚠️ Gagal fetch data dari Sheets:", err);
-    const mainMapEl = document.querySelector("#main-map");
-    if (mainMapEl) {
-      mainMapEl.insertAdjacentHTML(
-        "afterend",
-        "<p style='color:red'>⚠️ Gagal memuat data dari Google Sheets</p>"
-      );
-    }
   });
 
 
@@ -545,16 +542,14 @@ function showInfo(id) {
 
   document.querySelector("#info-box").innerHTML = `
     <h2>${data.name || "-"}</h2>
-    <img src="${data.logo || ""}" alt="logo" style="${data.logo ? "" : "display:none;"}">
+    ${data.logo ? `<img src="${data.logo}" alt="logo">` : "<p>-</p>"}
     <p>Club: ${data.club || "-"}</p>
     <p>Length: ${data.length || "-"}</p>
     <p>Laps: ${data.laps || "-"}</p>
     <p>Record: ${data.record || "-"}</p>
     <p>Cash: ${data.cash || "-"}</p>
-    <p>${data.info || "-"}</p>
-    ${data.track 
-      ? `<img src="${data.track}" alt="track" class="track-map">`
-      : `<p>-</p>`}
+    ${data.info ? `<p>${data.info}</p>` : "<p>-</p>"}
+    ${data.track ? `<img src="${data.track}" alt="track" class="track-map">` : "<p>-</p>"}
   `;
 }
   </script>
