@@ -480,52 +480,39 @@
       }
     });
 
-// === Integrasi Google Sheets ===
+    // === Integrasi Google Sheets ===
+// Ganti dengan URL API dari sheet.best
 const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
+// Override data dari Google Sheets
 fetch(SHEET_API)
   .then(res => res.json())
   .then(data => {
-    let lastMainMap = null; // simpan yg terakhir ada
-
     data.forEach(row => {
       const zoneId = parseInt(row.Zone.replace("zona",""));
       if (!zoneId) return;
 
-      // Update zoneData tanpa fallback (biar bisa kosong)
+      // Update zoneData jika ada data baru
       zoneData[zoneId] = {
-        club: row.Owner || "",
-        logo: row.LogoMap || "",
-        track: row.TrackMap || "",
-        name: row.TrackName || "",
-        length: row.Length || "",
-        laps: row.Rounds || "",
-        record: row.Record || "",
-        cash: row.Cash || "",
+        club: row.Owner || zoneData[zoneId]?.club,
+        logo: row.LogoMap || zoneData[zoneId]?.logo,
+        track: row.TrackMap || zoneData[zoneId]?.track,
+        name: row.TrackName || zoneData[zoneId]?.name,
+        length: row.Length || zoneData[zoneId]?.length,
+        laps: row.Rounds || zoneData[zoneId]?.laps,
+        record: row.Record || zoneData[zoneId]?.record,
+        cash: row.Cash || zoneData[zoneId]?.cash,
       };
 
       // Update logo di map
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-      if (el) {
-        if (row.LogoMap) {
-          el.src = row.LogoMap;
-          el.style.display = "block";
-        } else {
-          el.src = "";
-          el.style.display = "none"; // sembunyiin kalau kosong
-        }
-      }
+      if (el && row.LogoMap) el.src = row.LogoMap;
 
-      // Simpan kandidat main map terakhir
+      // Update main map kalau ada
       if (row.MainMap) {
-        lastMainMap = row.MainMap;
+        document.querySelector("#main-map").src = row.MainMap;
       }
     });
-
-    // Pakai main map yang terakhir terisi
-    if (lastMainMap) {
-      document.querySelector("#main-map").src = lastMainMap;
-    }
   })
   .catch(err => console.error("Gagal fetch data dari Sheets:", err));
 
@@ -533,6 +520,4 @@ fetch(SHEET_API)
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
 </body>
 </html>
-
-
 
