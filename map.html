@@ -503,14 +503,20 @@ fetch(SHEET_API)
         record: row.Record || zoneData[zoneId]?.record,
         cash: row.Cash || zoneData[zoneId]?.cash,
 
-        // Track selalu pakai dari kode asli
+        // Track selalu pakai dari kode asli (tidak override sheet)
         track: zoneData[zoneId]?.track,
       };
 
-      // Update logo di map interaktif kalau ada isinya
+      // Update logo di map interaktif
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-      if (el && row.LogoMap) {
-        el.src = row.LogoMap;
+      if (el) {
+        if (row.LogoMap) {
+          el.src = row.LogoMap;
+          el.style.display = "block";
+        } else {
+          el.removeAttribute("src");
+          el.style.display = "none"; // sembunyikan kalau kosong
+        }
       }
     });
 
@@ -531,6 +537,24 @@ fetch(SHEET_API)
       );
     }
   });
+
+
+// === Fungsi Show Info ===
+function showInfo(id) {
+  const data = zoneData[id] || {};
+
+  document.querySelector("#info-box").innerHTML = `
+    <h2>${data.name || "-"}</h2>
+    ${data.logo ? `<img src="${data.logo}" alt="logo">` : "<p>-</p>"}
+    <p>Club: ${data.club || "-"}</p>
+    <p>Length: ${data.length || "-"}</p>
+    <p>Laps: ${data.laps || "-"}</p>
+    <p>Record: ${data.record || "-"}</p>
+    <p>Cash: ${data.cash || "-"}</p>
+    ${data.info ? `<p>${data.info}</p>` : "<p>-</p>"}
+    ${data.track ? `<img src="${data.track}" alt="track" class="track-map">` : "<p>-</p>"}
+  `;
+}
 
   </script>
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
