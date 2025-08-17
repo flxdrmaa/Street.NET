@@ -481,50 +481,50 @@
     });
 
 // === Integrasi Google Sheets ===
-// Ganti dengan URL API dari sheet.best
 const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
 fetch(SHEET_API)
   .then(res => res.json())
   .then(data => {
-    let lastMainMap = ""; // simpan yang terakhir
+    let lastMainMap = null; // simpan yg terakhir ada
 
     data.forEach(row => {
       const zoneId = parseInt(row.Zone.replace("zona",""));
       if (!zoneId) return;
 
-      // Replace langsung (kosong ya tetap kosong)
+      // Update zoneData tanpa fallback (biar bisa kosong)
       zoneData[zoneId] = {
-        club:   row.Owner     ? row.Owner.trim()   : "",
-        logo:   row.LogoMap   ? row.LogoMap.trim() : "",
-        track:  row.TrackMap  ? row.TrackMap.trim(): "",
-        name:   row.TrackName ? row.TrackName.trim(): "",
-        length: row.Length    ? row.Length.trim()  : "",
-        laps:   row.Rounds    ? row.Rounds.trim()  : "",
-        record: row.Record    ? row.Record.trim()  : "",
-        cash:   row.Cash      ? row.Cash.trim()    : "",
+        club: row.Owner || "",
+        logo: row.LogoMap || "",
+        track: row.TrackMap || "",
+        name: row.TrackName || "",
+        length: row.Length || "",
+        laps: row.Rounds || "",
+        record: row.Record || "",
+        cash: row.Cash || "",
       };
 
       // Update logo di map
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
       if (el) {
-        if (row.LogoMap && row.LogoMap.trim() !== "") {
+        if (row.LogoMap) {
           el.src = row.LogoMap;
+          el.style.display = "block";
         } else {
-          el.removeAttribute("src");
+          el.src = "";
+          el.style.display = "none"; // sembunyiin kalau kosong
         }
       }
 
-      // Simpan main map terakhir
-      if (row.MainMap && row.MainMap.trim() !== "") {
-        lastMainMap = row.MainMap.trim();
+      // Simpan kandidat main map terakhir
+      if (row.MainMap) {
+        lastMainMap = row.MainMap;
       }
     });
 
-    // Setelah loop selesai, pakai main map terakhir
-    if (lastMainMap !== "") {
-      const mainMapEl = document.querySelector("#main-map");
-      if (mainMapEl) mainMapEl.src = lastMainMap;
+    // Pakai main map yang terakhir terisi
+    if (lastMainMap) {
+      document.querySelector("#main-map").src = lastMainMap;
     }
   })
   .catch(err => console.error("Gagal fetch data dari Sheets:", err));
@@ -533,5 +533,6 @@ fetch(SHEET_API)
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
 </body>
 </html>
+
 
 
