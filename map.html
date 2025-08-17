@@ -503,8 +503,9 @@ fetch(SHEET_API)
         record: row.Record || zoneData[zoneId]?.record,
         cash: row.Cash || zoneData[zoneId]?.cash,
 
-        // Track selalu pakai dari kode asli
+        // Selalu pakai default dari kode asli
         track: zoneData[zoneId]?.track,
+        trackName: zoneData[zoneId]?.trackName,
       };
 
       // Update logo di map interaktif kalau ada isinya
