@@ -392,56 +392,63 @@
       }
     });
 
-    // === Integrasi Google Sheets ===
-    const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
+// === Integrasi Google Sheets ===
+const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
-    fetch(SHEET_API)
-      .then(res=>res.json())
-      .then(data=>{
-        data.forEach(row=>{
-          // dukung "Zone 1", "zona1", "ZONE 1", dll
-          const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
-          if(!zoneId) return;
+fetch(SHEET_API)
+  .then(res=>res.json())
+  .then(data=>{
+    data.forEach(row=>{
+      // dukung "Zone 1", "zona1", "ZONE 1", dll
+      const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
+      if(!zoneId) return;
 
-          // update data zona (TIDAK mengubah posisi)
-          zoneData[zoneId] = {
-            club:   row.Owner    || zoneData[zoneId]?.club,
-            logo:   row.LogoMap  || zoneData[zoneId]?.logo,
-            info:   row.LogoInfo || zoneData[zoneId]?.info,
-            mainMap:row.MainMap  || zoneData[zoneId]?.mainMap,
-            length: row.Length   || zoneData[zoneId]?.length,
-            laps:   row.Rounds   || zoneData[zoneId]?.laps,
-            record: row.Record   || zoneData[zoneId]?.record,
-            cash:   row.Cash     || zoneData[zoneId]?.cash,
-            // pakai default dari kode asli
-            track:  zoneData[zoneId]?.track,
-            name:   zoneData[zoneId]?.name,
-          };
+      // Format cash -> otomatis kasih $
+      let cashFormatted = row.Cash;
+      if (cashFormatted) {
+        cashFormatted = "$" + Number(cashFormatted).toLocaleString();
+      }
 
-          // update logo di map kalau sheet ada
-          const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-          if(el && row.LogoMap){
-            el.src = row.LogoMap;
-          }
-        });
+      // update data zona (TIDAK mengubah posisi)
+      zoneData[zoneId] = {
+        club:   row.Owner    || zoneData[zoneId]?.club,
+        logo:   row.LogoMap  || zoneData[zoneId]?.logo,
+        info:   row.LogoInfo || zoneData[zoneId]?.info,
+        mainMap:row.MainMap  || zoneData[zoneId]?.mainMap,
+        length: row.Length   || zoneData[zoneId]?.length,
+        laps:   row.Rounds   || zoneData[zoneId]?.laps,
+        record: row.Record   || zoneData[zoneId]?.record,
+        cash:   cashFormatted || zoneData[zoneId]?.cash, // ← udah otomatis $10,000
+        // pakai default dari kode asli
+        track:  zoneData[zoneId]?.track,
+        name:   zoneData[zoneId]?.name,
+      };
 
-        // set main map kalau ada di sheet (ambil baris pertama yang punya MainMap)
-        const mainMapRow = data.find(r=>r.MainMap);
-        if(mainMapRow){
-          const mainMapEl = document.querySelector("#main-map");
-          if(mainMapEl) mainMapEl.src = mainMapRow.MainMap;
-        }
-      })
-      .catch(err=>{
-        console.error("⚠️ Gagal fetch data dari Sheets:", err);
-        const mainMapEl = document.querySelector("#main-map");
-        if(mainMapEl){
-          mainMapEl.insertAdjacentHTML("afterend",
-            "<p style='color:red'>⚠️ Gagal memuat data dari Google Sheets</p>"
-          );
-        }
-      });
+      // update logo di map kalau sheet ada
+      const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
+      if(el && row.LogoMap){
+        el.src = row.LogoMap;
+      }
+    });
+
+    // set main map kalau ada di sheet (ambil baris pertama yang punya MainMap)
+    const mainMapRow = data.find(r=>r.MainMap);
+    if(mainMapRow){
+      const mainMapEl = document.querySelector("#main-map");
+      if(mainMapEl) mainMapEl.src = mainMapRow.MainMap;
+    }
+  })
+  .catch(err=>{
+    console.error("⚠️ Gagal fetch data dari Sheets:", err);
+    const mainMapEl = document.querySelector("#main-map");
+    if(mainMapEl){
+      mainMapEl.insertAdjacentHTML("afterend",
+        "<p style='color:red'>⚠️ Gagal memuat data dari Google Sheets</p>"
+      );
+    }
+  });
   </script>
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
 </body>
 </html>
+
