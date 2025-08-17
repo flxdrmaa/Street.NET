@@ -80,21 +80,30 @@
       const logoI  = document.getElementById("logoInfo").value;
       const mainM  = document.getElementById("mainMap").value;
 
+      // Simpan ke zone yang dipilih (kecuali MainMap)
       fetch(SHEET_API + "/Zone/" + zone, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           Owner: owner,
           LogoMap: logoM,
-          LogoInfo: logoI,
-          MainMap: mainM
+          LogoInfo: logoI
         })
-      })
-      .then(res => res.json())
-      .then(() => alert("✅ Data berhasil disimpan ke Google Sheets!"))
-      .catch(err => alert("❌ Gagal simpan: " + err));
+      });
+
+      // MainMap hanya simpan di Zone 1
+      if (mainM) {
+        fetch(SHEET_API + "/Zone/Zone 1", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            MainMap: mainM
+          })
+        });
+      }
+
+      alert("✅ Data berhasil disimpan ke Google Sheets!");
     });
   </script>
 </body>
 </html>
-
