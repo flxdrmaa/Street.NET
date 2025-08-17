@@ -22,7 +22,7 @@
     <div class="card">
       <h2>Admin Panel Territory</h2>
       <form id="adminForm">
-        <label for="territory">Pilih Territory</label>
+        <label for="territory">Territory</label>
         <select id="territory">
           <option value="Zone 1">Downtown</option>
           <option value="Zone 2">Juniper Hill</option>
@@ -37,8 +37,8 @@
           <option value="Zone 11">Ocean Docks</option>
         </select>
 
-        <label for="name">Nama Pemilik</label>
-        <input type="text" id="name" placeholder="Masukkan nama pemilik">
+        <label for="name">Owner</label>
+        <input type="text" id="name" placeholder="Masukkan nama Owner">
 
         <label for="logoMap">Link Logo (Map)</label>
         <input type="url" id="logoMap" placeholder="https://contoh.com/logo.png" oninput="previewImage(this, 'logoMapPreview')">
@@ -51,6 +51,19 @@
         <label for="mainMap">Link Map Utama</label>
         <input type="url" id="mainMap" placeholder="https://contoh.com/map.png" oninput="previewImage(this, 'mainMapPreview')">
         <div class="preview"><img id="mainMapPreview" alt="Preview Map Utama" style="display:none;"></div>
+
+        <!-- Tambahan baru -->
+        <label for="length">Length</label>
+        <input type="text" id="length" placeholder="Masukkan panjang">
+
+        <label for="cash">Cash</label>
+        <input type="text" id="cash" placeholder="Masukkan jumlah cash">
+
+        <label for="round">Round</label>
+        <input type="text" id="round" placeholder="Masukkan jumlah round">
+
+        <label for="record">Record</label>
+        <input type="text" id="record" placeholder="Masukkan record">
 
         <button type="submit" class="save-btn">💾 Simpan</button>
       </form>
@@ -80,14 +93,23 @@
       const logoI  = document.getElementById("logoInfo").value;
       const mainM  = document.getElementById("mainMap").value;
 
-      // Simpan ke zone yang dipilih (kecuali MainMap)
+      const length = document.getElementById("length").value;
+      const cash   = document.getElementById("cash").value;
+      const round  = document.getElementById("round").value;
+      const record = document.getElementById("record").value;
+
+      // Simpan ke zone yang dipilih
       fetch(SHEET_API + "/Zone/" + zone, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           Owner: owner,
           LogoMap: logoM,
-          LogoInfo: logoI
+          LogoInfo: logoI,
+          Length: length,
+          Cash: cash,
+          Round: round,
+          Record: record
         })
       });
 
