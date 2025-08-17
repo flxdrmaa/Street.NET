@@ -22,7 +22,7 @@
     <div class="card">
       <h2>Admin Panel Territory</h2>
       <form id="adminForm">
-        <label for="territory">Territory</label>
+        <label for="territory">Pilih Territory</label>
         <select id="territory">
           <option value="Zone 1">Downtown</option>
           <option value="Zone 2">Juniper Hill</option>
@@ -31,14 +31,14 @@
           <option value="Zone 5">Foster Faley</option>
           <option value="Zone 6">Emerald Isle</option>
           <option value="Zone 7">Red Sands</option>
-          <option value="Zone 8">Old Venturas Strip</option>
-          <option value="Zone 9">Linden Station</option>
+          <option value="Zone 8">Linden Station</option>
+          <option value="Zone 9">Old Venturas Strip</option>
           <option value="Zone 10">Blueberry</option>
           <option value="Zone 11">Ocean Docks</option>
         </select>
 
-        <label for="name">Owner</label>
-        <input type="text" id="name" placeholder="Masukkan nama Owner">
+        <label for="name">Nama Pemilik</label>
+        <input type="text" id="name" placeholder="Masukkan nama pemilik">
 
         <label for="logoMap">Link Logo (Map)</label>
         <input type="url" id="logoMap" placeholder="https://contoh.com/logo.png" oninput="previewImage(this, 'logoMapPreview')">
@@ -52,17 +52,18 @@
         <input type="url" id="mainMap" placeholder="https://contoh.com/map.png" oninput="previewImage(this, 'mainMapPreview')">
         <div class="preview"><img id="mainMapPreview" alt="Preview Map Utama" style="display:none;"></div>
 
-        <label for="length">Length</label>
-        <input type="text" id="length" placeholder="Masukkan panjang">
+        <!-- Tambahan baru -->
+        <label for="length">Panjang Track (Length)</label>
+        <input type="text" id="length" placeholder="Contoh: 3.2 km">
 
-        <label for="cash">Cash</label>
-        <input type="text" id="cash" placeholder="Masukkan jumlah cash">
+        <label for="cash">Cash Reward</label>
+        <input type="number" id="cash" placeholder="Contoh: 5000">
 
-        <label for="round">Round</label>
-        <input type="text" id="round" placeholder="Masukkan jumlah round">
+        <label for="round">Jumlah Ronde</label>
+        <input type="number" id="round" placeholder="Contoh: 3">
 
-        <label for="record">Record</label>
-        <input type="text" id="record" placeholder="Masukkan record">
+        <label for="record">Record Waktu</label>
+        <input type="text" id="record" placeholder="Contoh: 02:15.35">
 
         <button type="submit" class="save-btn">💾 Simpan</button>
       </form>
@@ -70,7 +71,6 @@
   </div>
 
   <script>
-    // GANTI URL INI dengan endpoint dari sheet.best
     const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
     function previewImage(input, previewId) {
@@ -91,20 +91,19 @@
       const logoM  = document.getElementById("logoMap").value;
       const logoI  = document.getElementById("logoInfo").value;
       const mainM  = document.getElementById("mainMap").value;
-
       const length = document.getElementById("length").value;
       const cash   = document.getElementById("cash").value;
       const round  = document.getElementById("round").value;
       const record = document.getElementById("record").value;
 
-      // Update data zone
-      fetch(SHEET_API + "?Zone=" + encodeURIComponent(zone), {
+      fetch(SHEET_API + "/Zone/" + zone, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           Owner: owner,
           LogoMap: logoM,
           LogoInfo: logoI,
+          MainMap: mainM,
           Length: length,
           Cash: cash,
           Round: round,
@@ -112,24 +111,8 @@
         })
       })
       .then(res => res.json())
-      .then(data => console.log("✅ Update Zone sukses:", data))
-      .catch(err => console.error("❌ Error update Zone:", err));
-
-      // Update MainMap hanya untuk Zone 1
-      if (mainM) {
-        fetch(SHEET_API + "?Zone=Zone%201", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            MainMap: mainM
-          })
-        })
-        .then(res => res.json())
-        .then(data => console.log("✅ Update MainMap sukses:", data))
-        .catch(err => console.error("❌ Error update MainMap:", err));
-      }
-
-      alert("✅ Data berhasil disimpan ke Google Sheets!");
+      .then(() => alert("✅ Data berhasil disimpan ke Google Sheets!"))
+      .catch(err => alert("❌ Gagal simpan: " + err));
     });
   </script>
 </body>
