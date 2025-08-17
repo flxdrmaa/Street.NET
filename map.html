@@ -487,43 +487,39 @@ const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e
 fetch(SHEET_API)
   .then(res => res.json())
   .then(data => {
-    // Update setiap zone
     data.forEach(row => {
-      const zoneId = Number(row.Zone?.replace("zona", "")) || null;
+      // Ambil nomor zone → support "Zone 1", "zona1", "ZONE 1", dll
+      const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
       if (!zoneId) return;
 
-      // Update data zone
+      // Update zoneData sesuai sheet
       zoneData[zoneId] = {
         club: row.Owner || zoneData[zoneId]?.club,
         logo: row.LogoMap || zoneData[zoneId]?.logo,
-        track: row.TrackMap || zoneData[zoneId]?.track,
-        name: row.TrackName || zoneData[zoneId]?.name,
+        info: row.LogoInfo || zoneData[zoneId]?.info,
+        mainMap: row.MainMap || zoneData[zoneId]?.mainMap,
         length: row.Length || zoneData[zoneId]?.length,
         laps: row.Rounds || zoneData[zoneId]?.laps,
         record: row.Record || zoneData[zoneId]?.record,
         cash: row.Cash || zoneData[zoneId]?.cash,
       };
 
-      // Update logo di map
+      // Update logo di map interaktif
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
       if (el && row.LogoMap) {
         el.src = row.LogoMap;
-      } else if (!el && row.LogoMap) {
-        console.warn(`⚠️ LogoMap untuk zone ${zoneId} tidak ditemukan di DOM`);
       }
     });
 
-    // Update main map sekali saja
+    // Update main map (ambil salah satu baris yang ada isinya)
     const mainMapRow = data.find(r => r.MainMap);
     if (mainMapRow) {
       const mainMapEl = document.querySelector("#main-map");
-      if (mainMapEl) {
-        mainMapEl.src = mainMapRow.MainMap;
-      }
+      if (mainMapEl) mainMapEl.src = mainMapRow.MainMap;
     }
   })
   .catch(err => {
-    console.error("Gagal fetch data dari Sheets:", err);
+    console.error("⚠️ Gagal fetch data dari Sheets:", err);
     const mainMapEl = document.querySelector("#main-map");
     if (mainMapEl) {
       mainMapEl.insertAdjacentHTML(
