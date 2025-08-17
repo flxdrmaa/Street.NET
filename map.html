@@ -492,7 +492,7 @@ fetch(SHEET_API)
       const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
       if (!zoneId) return;
 
-      // Update zoneData sesuai sheet
+      // Update zoneData hanya kalau kolom di sheet ada isinya
       zoneData[zoneId] = {
         club: row.Owner || zoneData[zoneId]?.club,
         logo: row.LogoMap || zoneData[zoneId]?.logo,
@@ -502,9 +502,12 @@ fetch(SHEET_API)
         laps: row.Rounds || zoneData[zoneId]?.laps,
         record: row.Record || zoneData[zoneId]?.record,
         cash: row.Cash || zoneData[zoneId]?.cash,
+
+        // Track selalu pakai dari kode asli
+        track: zoneData[zoneId]?.track,
       };
 
-      // Update logo di map interaktif
+      // Update logo di map interaktif kalau ada isinya
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
       if (el && row.LogoMap) {
         el.src = row.LogoMap;
