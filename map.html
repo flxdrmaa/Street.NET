@@ -481,17 +481,31 @@
     });
 
 // === Integrasi Google Sheets ===
-// Ganti dengan URL API dari sheet.best
 const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
 fetch(SHEET_API)
   .then(res => res.json())
   .then(data => {
+    if (!data.length) return;
+
+    const lastRow = data[data.length - 1];
+
+    // Update map utama hanya dari row terakhir yang punya MainMap
+    if (lastRow.MainMap) {
+      let mainMapEl = document.querySelector("#main-map");
+      if (!mainMapEl) {
+        mainMapEl = document.createElement("img");
+        mainMapEl.id = "main-map";
+        document.body.appendChild(mainMapEl); // bisa ganti container sesuai kebutuhan
+      }
+      mainMapEl.src = lastRow.MainMap;
+    }
+
+    // Update zoneData seperti biasa
     data.forEach(row => {
-      const zoneId = parseInt(row.Zone?.match(/\d+/)); 
+      const zoneId = parseInt(row.Zone?.match(/\d+/));
       if (!zoneId) return;
 
-      // Replace total kalau ada isinya, fallback ke default kalau kosong
       zoneData[zoneId] = {
         club:   row.Owner   || zoneData[zoneId]?.club,
         logo:   row.LogoMap || zoneData[zoneId]?.logo,
@@ -503,15 +517,9 @@ fetch(SHEET_API)
         cash:   row.Cash || zoneData[zoneId]?.cash,
       };
 
-      // Update logo di map (kalau sheet punya data baru)
+      // Update logo di map zone
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
       if (el && row.LogoMap) el.src = row.LogoMap;
-
-      // Update main map (kalau sheet punya data baru)
-      if (row.MainMap) {
-        const mainMapEl = document.querySelector("#main-map");
-        if (mainMapEl) mainMapEl.src = row.MainMap;
-      }
     });
   })
   .catch(err => console.error("Gagal fetch data dari Sheets:", err));
@@ -519,6 +527,7 @@ fetch(SHEET_API)
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
 </body>
 </html>
+
 
 
 
