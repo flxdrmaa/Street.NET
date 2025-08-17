@@ -396,53 +396,57 @@
 const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
 fetch(SHEET_API)
-  .then(res=>res.json())
-  .then(data=>{
-    data.forEach(row=>{
+  .then(res => res.json())
+  .then(data => {
+    data.forEach(row => {
       // dukung "Zone 1", "zona1", "ZONE 1", dll
       const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
-      if(!zoneId) return;
+      if (!zoneId) return;
 
-      // Format cash -> otomatis kasih $
+      // --- Format cash ---
       let cashFormatted = row.Cash;
       if (cashFormatted) {
-        cashFormatted = "$" + Number(cashFormatted).toLocaleString();
+        // hapus semua karakter non-angka (koma, titik, spasi, dll)
+        cashFormatted = String(cashFormatted).replace(/[^\d]/g, "");
+        const cashNumber = parseInt(cashFormatted, 10) || 0;
+        cashFormatted = "$" + cashNumber.toLocaleString();
       }
 
-      // update data zona (TIDAK mengubah posisi)
+      // --- Update data zona (fallback ke default jika kosong) ---
       zoneData[zoneId] = {
-        club:   row.Owner    || zoneData[zoneId]?.club,
-        logo:   row.LogoMap  || zoneData[zoneId]?.logo,
-        info:   row.LogoInfo || zoneData[zoneId]?.info,
-        mainMap:row.MainMap  || zoneData[zoneId]?.mainMap,
-        length: row.Length   || zoneData[zoneId]?.length,
-        laps:   row.Rounds   || zoneData[zoneId]?.laps,
-        record: row.Record   || zoneData[zoneId]?.record,
-        cash:   cashFormatted || zoneData[zoneId]?.cash, // ← udah otomatis $10,000
-        // pakai default dari kode asli
-        track:  zoneData[zoneId]?.track,
-        name:   zoneData[zoneId]?.name,
+        club:    row.Owner    || zoneData[zoneId]?.club,
+        logo:    row.LogoMap  || zoneData[zoneId]?.logo,
+        info:    row.LogoInfo || zoneData[zoneId]?.info,
+        mainMap: row.MainMap  || zoneData[zoneId]?.mainMap,
+        length:  row.Length   || zoneData[zoneId]?.length,
+        laps:    row.Rounds   || zoneData[zoneId]?.laps,
+        record:  row.Record   || zoneData[zoneId]?.record,
+        cash:    cashFormatted || zoneData[zoneId]?.cash,
+        // tetap ambil dari default zoneData asli
+        track:   zoneData[zoneId]?.track,
+        name:    zoneData[zoneId]?.name,
       };
 
-      // update logo di map kalau sheet ada
+      // --- Update logo di map kalau ada di sheet ---
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-      if(el && row.LogoMap){
+      if (el && row.LogoMap) {
         el.src = row.LogoMap;
       }
     });
 
-    // set main map kalau ada di sheet (ambil baris pertama yang punya MainMap)
-    const mainMapRow = data.find(r=>r.MainMap);
-    if(mainMapRow){
+    // --- Ganti main map kalau ada di sheet (ambil baris pertama dengan MainMap) ---
+    const mainMapRow = data.find(r => r.MainMap);
+    if (mainMapRow) {
       const mainMapEl = document.querySelector("#main-map");
-      if(mainMapEl) mainMapEl.src = mainMapRow.MainMap;
+      if (mainMapEl) mainMapEl.src = mainMapRow.MainMap;
     }
   })
-  .catch(err=>{
+  .catch(err => {
     console.error("⚠️ Gagal fetch data dari Sheets:", err);
     const mainMapEl = document.querySelector("#main-map");
-    if(mainMapEl){
-      mainMapEl.insertAdjacentHTML("afterend",
+    if (mainMapEl) {
+      mainMapEl.insertAdjacentHTML(
+        "afterend",
         "<p style='color:red'>⚠️ Gagal memuat data dari Google Sheets</p>"
       );
     }
@@ -451,4 +455,5 @@ fetch(SHEET_API)
   <!-- The play() request was interrupted by a call to pause(). https://goo.gl/LdLk22 -->
 </body>
 </html>
+
 
