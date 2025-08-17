@@ -71,61 +71,66 @@
   </div>
 
   <script>
-    // GANTI URL INI dengan endpoint dari sheet.best setelah connect Google Sheets
-    const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
+  const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
-    function previewImage(input, previewId) {
-      const img = document.getElementById(previewId);
-      if (input.value) {
-        img.src = input.value;
-        img.style.display = "block";
-      } else {
-        img.style.display = "none";
-      }
+  function previewImage(input, previewId) {
+    const img = document.getElementById(previewId);
+    if (input.value) {
+      img.src = input.value;
+      img.style.display = "block";
+    } else {
+      img.style.display = "none";
     }
+  }
 
-    document.getElementById("adminForm").addEventListener("submit", function(e) {
-      e.preventDefault();
+  document.getElementById("adminForm").addEventListener("submit", function(e) {
+    e.preventDefault();
 
-      const zone   = document.getElementById("territory").value;
-      const owner  = document.getElementById("name").value;
-      const logoM  = document.getElementById("logoMap").value;
-      const logoI  = document.getElementById("logoInfo").value;
-      const mainM  = document.getElementById("mainMap").value;
+    const zone   = document.getElementById("territory").value;
+    const owner  = document.getElementById("name").value;
+    const logoM  = document.getElementById("logoMap").value;
+    const logoI  = document.getElementById("logoInfo").value;
+    const mainM  = document.getElementById("mainMap").value;
 
-      const length = document.getElementById("length").value;
-      const cash   = document.getElementById("cash").value;
-      const round  = document.getElementById("round").value;
-      const record = document.getElementById("record").value;
+    const length = document.getElementById("length").value;
+    const cash   = document.getElementById("cash").value;
+    const round  = document.getElementById("round").value;
+    const record = document.getElementById("record").value;
 
-      // Simpan ke zone yang dipilih
-      fetch(SHEET_API + "/Zone/" + zone, {
+    // Simpan ke zone yang dipilih
+    fetch(SHEET_API + "?Zone=" + encodeURIComponent(zone), {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        Owner: owner,
+        LogoMap: logoM,
+        LogoInfo: logoI,
+        Length: length,
+        Cash: cash,
+        Round: round,
+        Record: record
+      })
+    })
+    .then(r => r.json())
+    .then(data => console.log("✅ Update Zone sukses:", data))
+    .catch(err => console.error("❌ Gagal update Zone:", err));
+
+    // MainMap hanya simpan di Zone 1
+    if (mainM) {
+      fetch(SHEET_API + "?Zone=Zone 1", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          Owner: owner,
-          LogoMap: logoM,
-          LogoInfo: logoI,
-          Length: length,
-          Cash: cash,
-          Round: round,
-          Record: record
+          MainMap: mainM
         })
-      });
+      })
+      .then(r => r.json())
+      .then(data => console.log("✅ Update MainMap sukses:", data))
+      .catch(err => console.error("❌ Gagal update MainMap:", err));
+    }
 
-      // MainMap hanya simpan di Zone 1
-      if (mainM) {
-        fetch(SHEET_API + "/Zone/Zone 1", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            MainMap: mainM
-          })
-        });
-      }
-
-      alert("✅ Data berhasil disimpan ke Google Sheets!");
-    });
-  </script>
+    alert("✅ Data berhasil disimpan ke Google Sheets!");
+  });
+</script>
 </body>
 </html>
