@@ -8,147 +8,74 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(145deg, #1a1a2e, #16213e, #0f3460);
       color: #e0e0e0;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      min-height: 100vh;
-      padding: 40px 20px;
-      overflow-x: hidden;
+      display: flex; justify-content: center; align-items: flex-start;
+      min-height: 100vh; padding: 40px 20px; overflow-x: hidden;
     }
-
-    .container {
-      width: 100%;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
+    .container { width: 100%; max-width: 800px; margin: 0 auto; }
     .card {
       background: rgba(30, 41, 59, 0.95);
-      padding: 40px;
-      border-radius: 20px;
+      padding: 40px; border-radius: 20px;
       box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(10px);
       border: 1px solid rgba(255, 255, 255, 0.1);
       animation: fadeIn 0.5s ease-in-out;
     }
-
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     h2 {
-      text-align: center;
-      margin-bottom: 30px;
-      color: #ffffff;
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: 0.5px;
+      text-align: center; margin-bottom: 30px; color: #ffffff;
+      font-size: 28px; font-weight: 700; letter-spacing: 0.5px;
       text-transform: uppercase;
     }
-
-    .section {
-      margin-bottom: 30px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .section:last-child {
-      border-bottom: none;
-    }
-
+    .section { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+    .section:last-child { border-bottom: none; }
     label {
-      display: block;
-      margin: 15px 0 8px;
-      font-size: 14px;
-      font-weight: 500;
-      color: #b0b0b0;
-      text-transform: uppercase;
+      display: block; margin: 15px 0 8px; font-size: 14px;
+      font-weight: 500; color: #b0b0b0; text-transform: uppercase;
       letter-spacing: 0.5px;
     }
-
     select, input {
-      width: 100%;
-      padding: 14px 16px;
-      border-radius: 12px;
-      border: none;
-      background: rgba(45, 55, 72, 0.8);
-      color: #ffffff;
-      font-size: 15px;
-      outline: none;
-      transition: all 0.3s ease;
+      width: 100%; padding: 14px 16px; border-radius: 12px; border: none;
+      background: rgba(45, 55, 72, 0.8); color: #ffffff; font-size: 15px;
+      outline: none; transition: all 0.3s ease;
     }
-
     select:focus, input:focus {
       background: rgba(45, 55, 72, 1);
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
     }
-
-    .preview {
-      margin-top: 15px;
-      text-align: center;
-    }
-
+    .preview { margin-top: 15px; text-align: center; }
     .preview img {
-      max-width: 200px;
-      border-radius: 12px;
+      max-width: 200px; border-radius: 12px;
       border: 2px solid rgba(255, 255, 255, 0.1);
       transition: transform 0.3s ease;
     }
-
-    .preview img:hover {
-      transform: scale(1.05);
-    }
-
+    .preview img:hover { transform: scale(1.05); }
     .update-btn {
-      display: block;
-      width: 100%;
-      margin-top: 20px;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
+      display: block; width: 100%; margin-top: 20px; padding: 14px;
+      border-radius: 12px; border: none;
       background: linear-gradient(135deg, #3b82f6, #1e3a8a);
-      color: #ffffff;
-      font-size: 15px;
-      font-weight: 600;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: all 0.3s ease;
+      color: #ffffff; font-size: 15px; font-weight: 600;
+      text-transform: uppercase; cursor: pointer; transition: all 0.3s ease;
     }
-
     .update-btn:hover {
       background: linear-gradient(135deg, #60a5fa, #3b82f6);
       transform: translateY(-2px);
       box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3);
     }
-
-    .update-btn:active {
-      transform: scale(0.98);
-    }
-
+    .update-btn:active { transform: scale(0.98); }
     .input-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
     }
-
     @media (max-width: 600px) {
-      .input-group {
-        grid-template-columns: 1fr;
-      }
-      .card {
-        padding: 20px;
-      }
+      .input-group { grid-template-columns: 1fr; }
+      .card { padding: 20px; }
     }
   </style>
 </head>
@@ -185,7 +112,7 @@
             <button type="button" class="update-btn" onclick="updateField('MainMap')">Update</button>
           </div>
           <div>
-            <label for="name">Nama Club</label>
+            <label for="club">Nama Club</label>
             <input type="text" id="club" placeholder="Masukkan nama Club">
             <button type="button" class="update-btn" onclick="updateField('Owner')">Update</button>
           </div>
@@ -247,6 +174,18 @@
   <script>
     const SHEET_API = "https://api.sheetbest.com/sheets/d7276630-2475-4dbe-82c4-328e0dd9fb19";
 
+    // mapping field ↔ id input
+    const fieldMap = {
+      MainMap: "mainMap",
+      Owner: "club",
+      LogoMap: "logoMap",
+      LogoInfo: "logoInfo",
+      Length: "length",
+      Round: "round",
+      Cash: "cash",
+      Record: "record"
+    };
+
     function previewImage(input, previewId) {
       const img = document.getElementById(previewId);
       if (input.value) {
@@ -259,7 +198,15 @@
 
     function updateField(field) {
       const zone = document.getElementById("territory").value;
-      const value = document.getElementById(field.toLowerCase()).value;
+      const inputId = fieldMap[field];
+      const inputEl = document.getElementById(inputId);
+
+      if (!inputEl) {
+        alert(`❌ Input untuk ${field} tidak ditemukan (id: ${inputId})`);
+        return;
+      }
+
+      const value = inputEl.value;
 
       fetch(SHEET_API + "/Zone/" + zone, {
         method: "PATCH",
@@ -272,6 +219,4 @@
     }
   </script>
 </body>
-
 </html>
-
