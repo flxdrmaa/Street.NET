@@ -55,14 +55,21 @@
     padding: clamp(8px, 2vw, 12px) clamp(10px, 3vw, 20px);
     font-weight: bold;
     letter-spacing: 1px;
-    z-index: 10;
+    z-index: 100; /* Increased z-index to ensure topbar is above all */
     display: flex;
     align-items: center;
     justify-content: space-between;
+    box-sizing: border-box;
   }
 
   .topbar .purple { color: #800080; }
   .topbar .green { color: #00ff00; }
+
+  .topbar h2 {
+    margin: 0;
+    flex-grow: 1;
+    text-align: left;
+  }
 
   .hamburger {
     display: flex;
@@ -72,7 +79,9 @@
     width: 30px;
     height: 20px;
     cursor: pointer;
-    z-index: 30;
+    z-index: 101; /* Higher z-index to ensure visibility */
+    margin-right: clamp(10px, 2vw, 15px); /* Ensure space from edge */
+    flex-shrink: 0;
   }
 
   .hamburger span {
@@ -103,7 +112,7 @@
     padding: 20px;
     transform: translateX(100%);
     transition: transform 0.3s ease;
-    z-index: 20;
+    z-index: 99; /* Below topbar but above other content */
     border-left: 2px solid #1b3d39;
     box-shadow: -5px 0 15px rgba(0, 255, 200, 0.2);
   }
@@ -318,6 +327,10 @@
     #info-box .track-map img {
       max-height: clamp(80px, 25vw, 100px);
     }
+
+    .hamburger {
+      margin-right: clamp(5px, 1.5vw, 10px);
+    }
   }
 
   @media (max-width: 480px) {
@@ -365,6 +378,10 @@
 
     .nav-menu {
       width: min(90vw, 200px);
+    }
+
+    .hamburger {
+      margin-right: clamp(5px, 1vw, 8px);
     }
   }
 
