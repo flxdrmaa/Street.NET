@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Street.NET - Kontak Kami</title>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2084454135210602"
+     crossorigin="anonymous"></script>
+  <meta name="google-adsense-account" content="ca-pub-2084454135210602">
+  <style>
+  :root {
+    --default-zone-logo-size: 100px;
+    --neon-cyan: #00ffcc;
+    --neon-green: #00ff00;
+    --neon-purple: #800080;
+  }
+
+  body {
+    margin: 0;
+    background: #000;
+    font-family: 'Arial', sans-serif;
+    color: #fff;
+    overflow-x: hidden;
+  }
+
+  .container {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  .background-overlay {
+    position: fixed;
+    inset: 0;
+    background: url('https://i.imgur.com/ne9vTRM.png') no-repeat center center;
+    background-size: cover;
+    opacity: .80;
+    z-index: 0;
+    pointer-events: none;
+    width: 100vw;
+    height: 100vh;
+    transition: filter 0.3s ease;
+  }
+
+  .background-overlay.blur {
+    filter: blur(5px);
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: clamp(40px, 10vw, 50px);
+    background: rgba(0, 0, 0, .6);
+    color: var(--neon-cyan);
+    font-size: clamp(12px, 3vw, 16px);
+    padding: clamp(8px, 2vw, 12px) clamp(10px, 3vw, 20px);
+    font-weight: bold;
+    letter-spacing: 1px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+  }
+
+  .topbar .purple { color: var(--neon-purple); }
+  .topbar .green { color: var(--neon-green); }
+
+  .topbar h2 {
+    margin: 0;
+    flex-grow: 1;
+    text-align: left;
+  }
+
+  .hamburger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    z-index: 101;
+    margin-right: clamp(10px, 2vw, 15px);
+    flex-shrink: 0;
+  }
+
+  .hamburger span {
+    width: 100%;
+    height: 3px;
+    background: var(--neon-cyan);
+    transition: all 0.3s ease;
+  }
+
+  .hamburger.active span:nth-child(1) {
+    transform: rotate(45deg) translate(5px, 5px);
+  }
+
+  .hamburger.active span:nth-child(2) {
+    opacity: 0;
+  }
+
+  .hamburger.active span:nth-child(3) {
+    transform: rotate(-45deg) translate(7px, -7px);
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: clamp(40px, 10vw, 50px);
+    right: 0;
+    width: min(70vw, 250px);
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 99;
+    border-left: 2px solid #1b3d39;
+    box-shadow: -5px 0 15px rgba(0, 255, 200, 0.2);
+  }
+
+  .nav-menu.active {
+    transform: translateX(0);
+  }
+
+  .nav-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .nav-menu li {
+    margin: 15px 0;
+  }
+
+  .nav-menu a {
+    color: var(--neon-cyan);
+    text-decoration: none;
+    font-size: clamp(14px, 3vw, 16px);
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+  }
+
+  .nav-menu a:hover {
+    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green);
+  }
+
+  .content {
+    position: relative;
+    width: min(90vw, 800px);
+    margin: clamp(20px, 5vw, 60px) auto;
+    padding: clamp(20px, 5vw, 30px);
+    background: rgba(0, 0, 0, 0.85);
+    border: 2px solid rgba(0, 255, 200, 0.3);
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.2);
+    z-index: 2;
+    color: #ddd;
+    font-size: clamp(15px, 3.5vw, 17px);
+    line-height: 1.8;
+    animation: fadeIn 1s ease-out;
+  }
+
+  @keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .content h1 {
+    color: var(--neon-cyan);
+    font-size: clamp(24px, 6vw, 28px);
+    margin: 0 0 clamp(15px, 4vw, 20px);
+    text-align: center;
+    text-shadow: 0 0 12px rgba(0, 255, 200, 0.6);
+  }
+
+  .content p {
+    margin: clamp(10px, 2.5vw, 15px) 0;
+    color: #e0e0e0;
+  }
+
+  .content ul {
+    padding-left: clamp(20px, 5vw, 25px);
+    margin: clamp(10px, 2.5vw, 15px) 0;
+    list-style: none;
+  }
+
+  .content ul li {
+    position: relative;
+    margin: clamp(8px, 2vw, 10px) 0;
+    padding-left: clamp(25px, 6vw, 30px);
+  }
+
+  .content ul li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 12px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%2300ffcc"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>') no-repeat center;
+    background-size: contain;
+  }
+
+  .content a {
+    color: var(--neon-cyan);
+    text-decoration: none;
+    transition: color 0.3s ease, text-shadow 0.3s ease;
+  }
+
+  .content a:hover {
+    color: var(--neon-green);
+    text-shadow: 0 0 8px var(--neon-green);
+  }
+
+  @media (max-width: 768px) {
+    .content {
+      width: 95vw;
+      margin: clamp(10px, 3vw, 20px) auto;
+      padding: clamp(15px, 3vw, 20px);
+    }
+
+    .hamburger {
+      margin-right: clamp(5px, 1.5vw, 10px);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .topbar {
+      font-size: clamp(10px, 2.5vw, 12px);
+      padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 10px);
+    }
+
+    .content {
+      width: 98vw;
+      border-radius: 10px;
+    }
+
+    .nav-menu {
+      width: min(90vw, 200px);
+    }
+
+    .hamburger {
+      margin-right: clamp(5px, 1vw, 8px);
+    }
+  }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="background-overlay"></div>
+
+    <div class="topbar">
+      <h2><a href="index.html" style="color: inherit; text-decoration: none;">Selamat Datang di <span class="purple">Street</span>.<span class="green">NET</span></a></h2>
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <nav class="nav-menu" id="nav-menu">
+      <ul>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="about.html">Tentang</a></li>
+        <li><a href="contact.html">Kontak</a></li>
+        <li><a href="privacy.html">Privasi</a></li>
+        <li><a href="disclaimer.html">Disclaimer</a></li>
+      </ul>
+    </nav>
+
+    <div class="content">
+      <h1>Kontak Kami</h1>
+      <p>Kami di Street.NET selalu terbuka untuk mendengar dari Anda! Apakah Anda memiliki pertanyaan, saran, atau ingin berbagi antusiasme tentang dunia otomotif virtual? Hubungi kami melalui:</p>
+      <ul>
+        <li><strong>Email:</strong> <a href="mailto:contact@streetnet.com">darmaswd24@gmail.com</a></li>
+        <li><strong>Discord:</strong> Ikuti kami di <a href="https://discord.gg/Hcy4BsFssW="_blank">X</a> untuk pembaruan terbaru dan bergabung dengan komunitas kami.</li>
+      </ul>
+      <p>Kami akan merespons dalam waktu 48 jam. Terima kasih telah menjadi bagian dari petualangan Street.NET!</p>
+    </div>
+  </div>
+
+  <script>
+    // Kontrol Menu Hamburger
+    const hamburger = document.getElementById('hamburger');
+    const navMenu = document.getElementById('nav-menu');
+    const backgroundOverlay = document.querySelector('.background-overlay');
+
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('active');
+      navMenu.classList.toggle('active');
+      backgroundOverlay.classList.toggle('blur');
+    });
+
+    document.addEventListener('click', (e) => {
+      if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+        hamburger.classList.remove('active');
+        navMenu.classList.remove('active');
+        backgroundOverlay.classList.remove('blur');
+      }
+    });
+  </script>
+</body>
+</html>
