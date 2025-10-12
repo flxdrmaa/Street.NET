@@ -632,8 +632,8 @@
             length: row.Length || zoneData[zoneId]?.length,
             laps: row.Rounds || zoneData[zoneId]?.laps,
             record: row.Record || zoneData[zoneId]?.record,
-            cash: cashFormatted || zoneData[zoneId]?.cash,
-            track: zoneData[zoneId]?.track,
+            cash: row.Cash || zoneData[zoneId]?.cash,
+            track: row.Track || [zoneId]?.track,
             name: zoneData[zoneId]?.name,
           };
 
@@ -664,6 +664,7 @@
   </script>
 </body>
 </html>
+
 
 
 
