@@ -610,7 +610,7 @@
 
  // Ganti URL ini dengan endpoint Sheety kamu
 const SHEET_API = "https://api.sheety.co/d4f535733f3c3ddd54ae2c0eb9161c2a/mapUtama/sheet1"; 
-const zoneData = {};
+Object.assign(zoneData, {});
 
 fetch(SHEET_API)
   .then(res => res.json())
@@ -674,6 +674,7 @@ fetch(SHEET_API)
   </script>
 </body>
 </html>
+
 
 
 
