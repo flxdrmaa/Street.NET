@@ -659,7 +659,6 @@ fetch(SHEETSON_API, {
         track: row.Track || zoneData[zoneId]?.track,
         name: zoneData[zoneId]?.name,
       };
-      });
 
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
       if (el && row.LogoMap) {
@@ -672,7 +671,7 @@ fetch(SHEETSON_API, {
       const mainMapEl = document.querySelector("#main-map");
       if (mainMapEl) mainMapEl.src = mainMapRow.MainMap;
     }
-  });
+  })
   .catch(err => {
     console.error("⚠️ Gagal fetch data dari Sheetson:", err);
     const mainMapEl = document.querySelector("#main-map");
@@ -687,6 +686,7 @@ fetch(SHEETSON_API, {
   </script>
 </body>
 </html>
+
 
 
 
