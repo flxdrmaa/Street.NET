@@ -526,6 +526,9 @@
      (adsbygoogle = window.adsbygoogle || []).push({});
 </script>
   <script>
+    
+    function showInfo(id) {
+      <script>
     const zoneData = {
       1: { club:"Nocturne Performance", logo:"https://i.imgur.com/HQI3RaD.png", track:"https://i.imgur.com/cEKMybS.png", name:"Downtown", length:"5 Miles", laps:"3", record:"01:31:41", cash:"$15.000" },
       2: { club:"Invicible Midnight Racer", logo:"https://i.imgur.com/9fH0B1B.png", track:"https://i.imgur.com/a4toW9I.png", name:"Juniper hill", length:"5,2 Miles", laps:"6", record:"02:09:03", cash:"$15.000" },
@@ -544,10 +547,8 @@
     function showInfo(id) {
       const info = zoneData[id];
       if (!info) return;
-
       const zone = document.querySelector(`.zone[onclick="showInfo(${id})"]`);
       const infoLogoSize = zone?.dataset.infoLogoSize || '40px';
-
       document.getElementById('info-logo').style.setProperty('--info-box-logo-size', infoLogoSize);
       document.getElementById('info-logo').src = info.logo;
       document.getElementById('info-club').textContent = info.club;
@@ -557,7 +558,6 @@
       document.getElementById('info-laps').textContent = info.laps;
       document.getElementById('info-record').textContent = info.record;
       document.getElementById('info-cash').textContent = info.cash;
-
       const box = document.getElementById('info-box');
       box.classList.add('active');
     }
@@ -582,7 +582,6 @@
       }, 500);
     }
 
-    // Hamburger Menu Control
     const hamburger = document.getElementById('hamburger');
     const navMenu = document.getElementById('nav-menu');
     const backgroundOverlay = document.querySelector('.background-overlay');
@@ -599,7 +598,6 @@
       backgroundOverlay.classList.remove('blur');
     }
 
-    // Audio Control
     const audio = document.getElementById('backgroundMusic');
     const playPauseBtn = document.getElementById('playPauseBtn');
     playPauseBtn.addEventListener('click', function() {
@@ -612,79 +610,78 @@
       }
     });
 
-// 🔧 Konfigurasi Sheetson
-const SHEETSON_API = "https://api.sheetson.com/v2/sheets/sheet1";
-const SHEETSON_KEY = "RWV7ouHImJvD33guxGKYc2Xqxqy3nuenc8hp8L06xcT33W6AaVY2xLHqPQE";
-const SPREADSHEET_ID = "12Txuhs0bqUvwty4LZoLwiky8Ez-42g17_DM-AbwXpJo";
+    const SHEETSON_API = "https://api.sheetson.com/v2/sheets/sheet1";
+    const SHEETSON_KEY = "RWV7ouHImJvD33guxGKYc2Xqxqy3nuenc8hp8L06xcT33W6AaVY2xLHqPQE";
+    const SPREADSHEET_ID = "12Txuhs0bqUvwty4LZoLwiky8Ez-42g17_DM-AbwXpJo";
 
-// Pastikan tidak mendeklarasikan zoneData dua kali
-window.zoneData = window.zoneData || {};
+    window.zoneData = window.zoneData || {};
 
-fetch(SHEETSON_API, {
-  headers: {
-    "Authorization": `Bearer ${SHEETSON_KEY}`,
-    "X-Spreadsheet-Id": SPREADSHEET_ID,
-  },
-})
-  .then(res => res.json())
-  .then(json => {
-    const data = json.results || json.data || json; // format fleksibel
-    console.log("✅ Data dari Sheetson:", data);
+    fetch(SHEETSON_API, {
+      headers: {
+        "Authorization": `Bearer ${SHEETSON_KEY}`,
+        "X-Spreadsheet-Id": SPREADSHEET_ID,
+      },
+    })
+      .then(res => res.json())
+      .then(json => {
+        const data = json.results || json.data || json;
+        console.log("✅ Data dari Sheetson:", data);
 
-    if (!Array.isArray(data)) {
-      console.error("Response bukan array:", data);
-      return;
-    }
+        if (!Array.isArray(data)) {
+          console.error("Response bukan array:", data);
+          return;
+        }
 
-  data.forEach(row => {
-      const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
-      if (!zoneId) return;
+        data.forEach(row => {
+          const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
+          if (!zoneId) return;
 
-      let cashFormatted = row.Cash;
-      if (cashFormatted) {
-        cashFormatted = String(cashFormatted).replace(/[^\d]/g, "");
-        const cashNumber = parseInt(cashFormatted, 10) || 0;
-        cashFormatted = "$" + cashNumber.toLocaleString();
-      }
+          let cashFormatted = row.Cash;
+          if (cashFormatted) {
+            cashFormatted = String(cashFormatted).replace(/[^\d]/g, "");
+            const cashNumber = parseInt(cashFormatted, 10) || 0;
+            cashFormatted = "$" + cashNumber.toLocaleString();
+          }
 
-      zoneData[zoneId] = {
-        club: row.Owner || zoneData[zoneId]?.club,
-        logo: row.LogoMap || zoneData[zoneId]?.logo,
-        info: row.LogoInfo || zoneData[zoneId]?.info,
-        mainMap: row.MainMap || zoneData[zoneId]?.mainMap,
-        length: row.Length || zoneData[zoneId]?.length,
-        laps: row.Rounds || zoneData[zoneId]?.laps,
-        record: row.Record || zoneData[zoneId]?.record,
-        cash: cashFormatted || zoneData[zoneId]?.cash, // Menggunakan cashFormatted
-        track: row.Track || zoneData[zoneId]?.track,
-        name: row.Name || zoneData[zoneId]?.name, // Menambahkan kolom Name dari sheet
-      };
+          zoneData[zoneId] = {
+            club: row.Owner || zoneData[zoneId]?.club,
+            logo: row.LogoMap || zoneData[zoneId]?.logo,
+            track: row.Track || zoneData[zoneId]?.track,
+            name: row.Name || zoneData[zoneId]?.name, // Sekarang ini akan bekerja setelah Anda mengubah header di sheet
+            length: row.Length || zoneData[zoneId]?.length,
+            laps: row.Rounds || zoneData[zoneId]?.laps,
+            record: row.Record || zoneData[zoneId]?.record,
+            cash: cashFormatted || zoneData[zoneId]?.cash,
+            mainMap: row.MainMap || zoneData[zoneId]?.mainMap,
+            info: row.LogoInfo || zoneData[zoneId]?.info,
+          };
 
-      const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-      if (el && row.LogoMap) {
-        el.src = row.LogoMap;
-      }
-    });
+          const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
+          if (el && row.LogoMap) {
+            el.src = row.LogoMap;
+          }
+        });
 
-    const mainMapRow = data.find(r => r.MainMap);
-    if (mainMapRow) {
-      const mainMapEl = document.querySelector("#main-map");
-      if (mainMapEl) mainMapEl.src = mainMapRow.MainMap;
-    }
-  })
-  .catch(err => {
-    console.error("⚠️ Gagal fetch data dari Sheetson:", err);
-    const mainMapEl = document.querySelector("#main--map");
-    if (mainMapEl) {
-      mainMapEl.insertAdjacentHTML(
-        "afterend",
-        "<p style='color:red'>⚠️ Gagal memuat data dari Sheetson</p>"
-      );
-    }
-  });
-    </script>
+        const mainMapRow = data.find(r => r.MainMap);
+        if (mainMapRow) {
+          const mainMapEl = document.querySelector("#main-map");
+          if (mainMapEl) mainMapEl.src = mainMapRow.MainMap;
+        }
+      })
+      .catch(err => {
+        console.error("⚠️ Gagal fetch data dari Sheetson:", err);
+        const mainMapEl = document.querySelector("#main-map"); // <-- Memperbaiki typo #main--map
+        if (mainMapEl) {
+          mainMapEl.insertAdjacentHTML(
+            "afterend",
+            "<p style='color:red'>⚠️ Gagal memuat data dari Sheetson</p>"
+          );
+        }
+      });
+  </script>
 </body>
 </html>
+
 
 
 
