@@ -613,9 +613,9 @@
     });
 
 // 🔧 Konfigurasi Sheetson
-const SHEETSON_API = "https://api.sheetson.com/v2/sheets/sheet1"; // Ganti "sheet1" dengan nama sheet kamu
-const SHEETSON_KEY = "gzsonqOrsAPCK5AqX9uhSdYuFHwiwO7MH_B7VuHhGK8bFF78JjWo9ORbWWc"; // Ganti dengan API key dari https://sheetson.com
-const SPREADSHEET_ID = "1iafGLNwOMUCBNhpzwKLhoJAWXXtIQcWIifSJiszuaXs"; // Ganti dengan ID dari Google Sheet kamu
+const SHEETSON_API = "https://api.sheetson.com/v2/sheets/sheet1";
+const SHEETSON_KEY = "gzsonqOrsAPCK5AqX9uhSdYuFHwiwO7MH_B7VuHhGK8bFF78JjWo9ORbWWc";
+const SPREADSHEET_ID = "1iafGLNwOMUCBNhpzwKLhoJAWXXtIQcWIifSJiszuaXs";
 
 // Pastikan tidak mendeklarasikan zoneData dua kali
 window.zoneData = window.zoneData || {};
@@ -655,9 +655,9 @@ fetch(SHEETSON_API, {
         length: row.Length || zoneData[zoneId]?.length,
         laps: row.Rounds || zoneData[zoneId]?.laps,
         record: row.Record || zoneData[zoneId]?.record,
-        cash: row.Cash || zoneData[zoneId]?.cash,
+        cash: cashFormatted || zoneData[zoneId]?.cash, // Menggunakan cashFormatted
         track: row.Track || zoneData[zoneId]?.track,
-        name: zoneData[zoneId]?.name,
+        name: row.Name || zoneData[zoneId]?.name, // Menambahkan kolom Name dari sheet
       };
 
       const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
@@ -674,7 +674,7 @@ fetch(SHEETSON_API, {
   })
   .catch(err => {
     console.error("⚠️ Gagal fetch data dari Sheetson:", err);
-    const mainMapEl = document.querySelector("#main-map");
+    const mainMapEl = document.querySelector("#main--map");
     if (mainMapEl) {
       mainMapEl.insertAdjacentHTML(
         "afterend",
@@ -682,33 +682,6 @@ fetch(SHEETSON_API, {
       );
     }
   });
-
-  </script>
+    </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
