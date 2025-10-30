@@ -672,7 +672,7 @@ fetch(SHEETSON_API, {
       const mainMapEl = document.querySelector("#main-map");
       if (mainMapEl) mainMapEl.src = mainMapRow.MainMap;
     }
-  })
+  });
   .catch(err => {
     console.error("⚠️ Gagal fetch data dari Sheetson:", err);
     const mainMapEl = document.querySelector("#main-map");
@@ -687,6 +687,7 @@ fetch(SHEETSON_API, {
   </script>
 </body>
 </html>
+
 
 
 
