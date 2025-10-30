@@ -636,37 +636,31 @@ fetch(SHEETSON_API, {
       return;
     }
 
-    data.forEach(row => {
-      const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
-      if (!zoneId) return;
+rows.forEach(row => {
+  const zoneId = Number((row.Zone || "").replace(/[^\d]/g, ""));
+  if (!zoneId) return;
 
-      let cashFormatted = row.Cash;
-      if (cashFormatted) {
-        cashFormatted = String(cashFormatted).replace(/[^\d]/g, "");
-        const cashNumber = parseInt(cashFormatted, 10) || 0;
-        cashFormatted = "$" + cashNumber.toLocaleString();
-      }
+  zoneData[zoneId] = {
+    club: row.Owner || zoneData[zoneId]?.club,
+    logo: row.LogoMap || zoneData[zoneId]?.logo,
+    info: row.LogoInfo || zoneData[zoneId]?.info,
+    mainMap: row.MainMap || zoneData[zoneId]?.mainMap,
+    length: row.Length || zoneData[zoneId]?.length,
+    laps: row.Rounds || zoneData[zoneId]?.laps,
+    record: row.Record || zoneData[zoneId]?.record,
+    cash: row.Cash || zoneData[zoneId]?.cash,
+    track: row.Track || zoneData[zoneId]?.track,
+    name: row.TrackName || zoneData[zoneId]?.name,
+  };
 
-      zoneData[zoneId] = {
-        club: row.Owner || zoneData[zoneId]?.club,
-        logo: row.LogoMap || zoneData[zoneId]?.logo,
-        info: row.LogoInfo || zoneData[zoneId]?.info,
-        mainMap: row.MainMap || zoneData[zoneId]?.mainMap,
-        length: row.Length || zoneData[zoneId]?.length,
-        laps: row.Rounds || zoneData[zoneId]?.laps,
-        record: row.Record || zoneData[zoneId]?.record,
-         record: row.Record || zoneData[zoneId]?.record,
-        cash: row.Cash || zoneData[zoneId]?.cash,
-        track: row.Track || zoneData[zoneId]?.track,
-        name: zoneData[zoneId]?.name,
-      };
-      });
+  // update gambar zone di halaman jika ada
+  const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
+  if (el && row.LogoMap) {
+    el.src = row.LogoMap;
+  }
+});
 
-      const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-      if (el && row.LogoMap) {
-        el.src = row.LogoMap;
-      }
-    });
+console.log("✅ zoneData setelah update:", zoneData);
 
     const mainMapRow = data.find(r => r.MainMap);
     if (mainMapRow) {
@@ -688,6 +682,7 @@ fetch(SHEETSON_API, {
   </script>
 </body>
 </html>
+
 
 
 
