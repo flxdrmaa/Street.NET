@@ -636,31 +636,37 @@ fetch(SHEETSON_API, {
       return;
     }
 
-rows.forEach(row => {
-  const zoneId = Number((row.Zone || "").replace(/[^\d]/g, ""));
-  if (!zoneId) return;
+  data.forEach(row => {
+      const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
+      if (!zoneId) return;
 
-  zoneData[zoneId] = {
-    club: row.Owner || zoneData[zoneId]?.club,
-    logo: row.LogoMap || zoneData[zoneId]?.logo,
-    info: row.LogoInfo || zoneData[zoneId]?.info,
-    mainMap: row.MainMap || zoneData[zoneId]?.mainMap,
-    length: row.Length || zoneData[zoneId]?.length,
-    laps: row.Rounds || zoneData[zoneId]?.laps,
-    record: row.Record || zoneData[zoneId]?.record,
-    cash: row.Cash || zoneData[zoneId]?.cash,
-    track: row.Track || zoneData[zoneId]?.track,
-    name: row.TrackName || zoneData[zoneId]?.name,
-  };
+      let cashFormatted = row.Cash;
+      if (cashFormatted) {
+        cashFormatted = String(cashFormatted).replace(/[^\d]/g, "");
+        const cashNumber = parseInt(cashFormatted, 10) || 0;
+        cashFormatted = "$" + cashNumber.toLocaleString();
+      }
 
-  // update gambar zone di halaman jika ada
-  const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-  if (el && row.LogoMap) {
-    el.src = row.LogoMap;
-  }
-});
+      zoneData[zoneId] = {
+        club: row.Owner || zoneData[zoneId]?.club,
+        logo: row.LogoMap || zoneData[zoneId]?.logo,
+        info: row.LogoInfo || zoneData[zoneId]?.info,
+        mainMap: row.MainMap || zoneData[zoneId]?.mainMap,
+        length: row.Length || zoneData[zoneId]?.length,
+        laps: row.Rounds || zoneData[zoneId]?.laps,
+        record: row.Record || zoneData[zoneId]?.record,
+         record: row.Record || zoneData[zoneId]?.record,
+        cash: row.Cash || zoneData[zoneId]?.cash,
+        track: row.Track || zoneData[zoneId]?.track,
+        name: zoneData[zoneId]?.name,
+      };
+      });
 
-console.log("✅ zoneData setelah update:", zoneData);
+      const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
+      if (el && row.LogoMap) {
+        el.src = row.LogoMap;
+      }
+    });
 
     const mainMapRow = data.find(r => r.MainMap);
     if (mainMapRow) {
@@ -682,6 +688,7 @@ console.log("✅ zoneData setelah update:", zoneData);
   </script>
 </body>
 </html>
+
 
 
 
