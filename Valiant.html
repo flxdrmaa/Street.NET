@@ -563,23 +563,6 @@
       }, 500);
     }
 
-    // Hamburger Menu Control
-    const hamburger = document.getElementById('hamburger');
-    const navMenu = document.getElementById('nav-menu');
-    const backgroundOverlay = document.querySelector('.background-overlay');
-
-    hamburger.addEventListener('click', () => {
-      hamburger.classList.toggle('active');
-      navMenu.classList.toggle('active');
-      backgroundOverlay.classList.toggle('blur');
-    });
-
-    function closeMenu() {
-      hamburger.classList.remove('active');
-      navMenu.classList.remove('active');
-      backgroundOverlay.classList.remove('blur');
-    }
-
     // Audio Control
     const audio = document.getElementById('backgroundMusic');
     const playPauseBtn = document.getElementById('playPauseBtn');
