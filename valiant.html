@@ -12,71 +12,70 @@
 </script>
   <style>
 
-/* Tombol Discord di Dalam Map */
+/* Tombol Discord Utama (Hanya Ikon, Tanpa Background) */
   .discord-btn {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    width: clamp(35px, 8vw, 45px); /* Ukuran responsif */
-    height: clamp(35px, 8vw, 45px);
-    background: #5865F2; /* Warna Blurple Discord */
-    border-radius: 50%;
+    width: clamp(30px, 7vw, 40px); 
+    height: clamp(30px, 7vw, 40px);
+    background: transparent; /* Menghilangkan warna ungu */
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 100;
-    box-shadow: 0 0 15px rgba(88, 101, 242, 0.6);
     transition: transform 0.2s ease;
+    border: none;
+    box-shadow: none; /* Menghilangkan bayangan/glow */
   }
 
   .discord-btn:hover {
-    transform: scale(1.1);
+    transform: scale(1.15);
   }
 
-  /* Memastikan logo putih dan terlihat */
+  /* Ikon di dalam tombol */
   .discord-btn img {
-    width: 60%;
+    width: 100%;
     height: auto;
     display: block;
-    filter: brightness(0) invert(1); /* Memaksa logo jadi putih bersih */
+    /* Filter ini membuat ikon jadi putih, hapus jika ingin warna asli Discord */
+    filter: brightness(0) invert(1); 
   }
 
-  /* Overlay Simpel ala Info-Box */
+  /* Overlay Box Discord */
   #discord-box {
     position: absolute;
-    bottom: 75px; /* Berada tepat di atas tombol */
+    bottom: 70px; 
     left: 20px;
-    width: 200px;
+    width: 180px;
     background: #0f1f1d;
-    border: 2px solid #5865F2;
-    padding: 12px;
-    border-radius: 12px;
+    border: 1px solid #5865F2;
+    padding: 15px;
+    border-radius: 8px;
     display: none;
     z-index: 101;
     font-family: Arial, sans-serif;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   }
 
   #discord-box.active {
     display: block;
-    animation: scaleFadeIn 0.3s ease-out;
+    animation: fadeIn 0.3s ease-out;
   }
 
   .discord-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 14px;
     color: #fff;
-    margin-bottom: 8px;
+    margin-bottom: 5px;
+    display: block; /* Menghapus flex karena logo sudah tidak ada */
   }
 
   #discord-box p {
     font-size: 11px;
-    color: #ccc;
-    margin: 0 0 10px 0;
+    color: #aaa;
+    margin: 0 0 12px 0;
     line-height: 1.4;
   }
 
@@ -88,8 +87,8 @@
     text-decoration: none;
     font-size: 11px;
     font-weight: bold;
-    padding: 8px;
-    border-radius: 6px;
+    padding: 7px;
+    border-radius: 4px;
     transition: background 0.2s;
   }
 
@@ -582,24 +581,16 @@
       <div class="zone" onclick="showInfo(9)"  style="top:20.58%; left:87.65%; --zone-logo-size:90px;" data-zone-logo-size="44px" data-info-logo-size="70px">
         <img src="" alt="Zone 9" loading="lazy">
       </div>
-<!-- Tombol Discord Bulat -->
-  <div class="discord-floating-btn" id="openDiscord">
-    <img src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Discord Icon">
-  </div>
-
-<!-- Tombol Discord di Dalam Map -->
+<!-- Tombol Discord Tanpa Background -->
 <div class="discord-btn" onclick="toggleDiscordBox(event)">
   <img src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Discord">
 </div>
 
-<!-- Overlay Simpel ala Info-Box -->
+<!-- Overlay Box Simpel Tanpa Logo -->
 <div id="discord-box">
-  <div class="discord-header">
-    <img src="https://www.svgrepo.com/show/353655/discord-icon.svg" width="30">
-    <span>Discord Street.Net VRP</span>
-  </div>
-  <p>Join our community for the latest updates!</p>
-  <a href=https://discord.gg/3pGSRugZ5p" target="_blank" class="discord-link">JOIN NOW</a>
+  <div class="discord-header">Street.Net VRP Community</div>
+  <p>Join our Discord server for latest updates.</p>
+  <a href="https://discord.gg/3pGSRugZ5p" target="_blank" class="discord-link">JOIN NOW</a>
 </div>
 		
     </div>
@@ -804,14 +795,11 @@ fetch(SHEETSON_API, {
 function toggleDiscordBox(event) {
       event.stopPropagation(); 
       const discordBox = document.getElementById('discord-box');
-      
-      // Tutup info-box zona jika discord dibuka
       document.getElementById('info-box').classList.remove('active');
-      
       discordBox.classList.toggle('active');
     }
 
-    // Update Listener Klik Global
+    // Klik Global untuk menutup overlay
     document.addEventListener('click', (e) => {
       const box = document.getElementById('info-box');
       const discordBox = document.getElementById('discord-box');
@@ -820,17 +808,14 @@ function toggleDiscordBox(event) {
       const navMenu = document.getElementById('nav-menu');
       const hamburger = document.getElementById('hamburger');
 
-      // Tutup info-box jika klik di luar
       if (box.classList.contains('active') && !box.contains(e.target) && !zone) {
         closeInfo();
       }
       
-      // Tutup discord box jika klik di luar tombol & boxnya
       if (discordBox.classList.contains('active') && !discordBox.contains(e.target) && !discordBtn) {
         discordBox.classList.remove('active');
       }
 
-      // Tutup menu hamburger
       if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
         closeMenu();
       }
