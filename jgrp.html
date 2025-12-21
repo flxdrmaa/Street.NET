@@ -11,6 +11,98 @@
         src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
 </script>
   <style>
+
+/* Tombol Discord Utama (Hanya Ikon, Tanpa Background) */
+  .discord-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: clamp(30px, 7vw, 40px); 
+    height: clamp(30px, 7vw, 40px);
+    background: transparent; /* Menghilangkan warna ungu */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 100;
+    transition: transform 0.2s ease;
+    border: none;
+    box-shadow: none; /* Menghilangkan bayangan/glow */
+  }
+
+  .discord-btn:hover {
+    transform: scale(1.15);
+  }
+
+  /* Ikon di dalam tombol */
+  .discord-btn img {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* Filter ini membuat ikon jadi putih, hapus jika ingin warna asli Discord */
+    filter: brightness(0) invert(1); 
+  }
+
+  /* Overlay Box Discord */
+  #discord-box {
+    position: absolute;
+    bottom: 70px; 
+    left: 20px;
+    width: 180px;
+    background: #0f1f1d;
+    border: 1px solid #5865F2;
+    padding: 15px;
+    border-radius: 8px;
+    display: none;
+    z-index: 101;
+    font-family: Arial, sans-serif;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  #discord-box.active {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .discord-header {
+    font-weight: bold;
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 5px;
+    display: block; /* Menghapus flex karena logo sudah tidak ada */
+  }
+
+  #discord-box p {
+    font-size: 11px;
+    color: #aaa;
+    margin: 0 0 12px 0;
+    line-height: 1.4;
+  }
+
+  .discord-link {
+    display: block;
+    text-align: center;
+    background: #5865F2;
+    color: white !important;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 7px;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+
+  .discord-link:hover {
+    background: #4752c4;
+  }
+
+  /* Penyesuaian Mobile agar tidak menutupi peta */
+  @media (max-width: 480px) {
+    .discord-btn { bottom: 15px; left: 15px; }
+    #discord-box { bottom: 65px; left: 15px; width: 160px; }
+  }
+
+	  
   :root {
     --default-zone-logo-size: 100px;
   }
@@ -483,6 +575,17 @@
       <div class="zone" onclick="showInfo(9)"  style="top:20.58%; left:87.65%; --zone-logo-size:90px;" data-zone-logo-size="44px" data-info-logo-size="70px">
         <img src="" alt="Zone 9" loading="lazy">
       </div>
+		<!-- Tombol Discord Tanpa Background -->
+<div class="discord-btn" onclick="toggleDiscordBox(event)">
+  <img src="https://www.svgrepo.com/show/353655/discord-icon.svg" alt="Discord">
+</div>
+
+<!-- Overlay Box Simpel Tanpa Logo -->
+<div id="discord-box">
+  <div class="discord-header">Street.Net JG:RP Community</div>
+  <p>Join our Discord server for latest updates.</p>
+  <a href="https://discord.gg/wV85VEkcMt" target="_blank" class="discord-link">JOIN NOW</a>
+</div>
     </div>
 
 
@@ -681,6 +784,36 @@ fetch(SHEETSON_API, {
       );
     }
   });
+
+function toggleDiscordBox(event) {
+      event.stopPropagation(); 
+      const discordBox = document.getElementById('discord-box');
+      document.getElementById('info-box').classList.remove('active');
+      discordBox.classList.toggle('active');
+    }
+
+    // Klik Global untuk menutup overlay
+    document.addEventListener('click', (e) => {
+      const box = document.getElementById('info-box');
+      const discordBox = document.getElementById('discord-box');
+      const zone = e.target.closest('.zone');
+      const discordBtn = e.target.closest('.discord-btn');
+      const navMenu = document.getElementById('nav-menu');
+      const hamburger = document.getElementById('hamburger');
+
+      if (box.classList.contains('active') && !box.contains(e.target) && !zone) {
+        closeInfo();
+      }
+      
+      if (discordBox.classList.contains('active') && !discordBox.contains(e.target) && !discordBtn) {
+        discordBox.classList.remove('active');
+      }
+
+      if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+        closeMenu();
+      }
+    });
+	  
     </script>
 </body>
 </html>
