@@ -12,21 +12,21 @@
 </script>
   <style>
 
-/* Tombol Discord di Kiri Bawah Map */
+/* Tombol Discord di Dalam Map */
   .discord-btn {
     position: absolute;
     bottom: 20px;
     left: 20px;
-    width: 45px;
-    height: 45px;
-    background: #5865F2;
+    width: clamp(35px, 8vw, 45px); /* Ukuran responsif */
+    height: clamp(35px, 8vw, 45px);
+    background: #5865F2; /* Warna Blurple Discord */
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    z-index: 10;
-    box-shadow: 0 0 10px rgba(88, 101, 242, 0.6);
+    z-index: 100;
+    box-shadow: 0 0 15px rgba(88, 101, 242, 0.6);
     transition: transform 0.2s ease;
   }
 
@@ -34,25 +34,28 @@
     transform: scale(1.1);
   }
 
+  /* Memastikan logo putih dan terlihat */
   .discord-btn img {
-    width: 25px;
-    height: 25px;
+    width: 60%;
+    height: auto;
+    display: block;
+    filter: brightness(0) invert(1); /* Memaksa logo jadi putih bersih */
   }
 
-  /* Overlay Box Simpel */
+  /* Overlay Simpel ala Info-Box */
   #discord-box {
     position: absolute;
-    bottom: 75px; /* Muncul di atas tombol */
+    bottom: 75px; /* Berada tepat di atas tombol */
     left: 20px;
-    width: 180px;
+    width: 200px;
     background: #0f1f1d;
     border: 2px solid #5865F2;
     padding: 12px;
     border-radius: 12px;
     display: none;
-    z-index: 11;
+    z-index: 101;
     font-family: Arial, sans-serif;
-    box-shadow: 0 0 15px rgba(88, 101, 242, 0.4);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
   }
 
   #discord-box.active {
@@ -81,94 +84,23 @@
     display: block;
     text-align: center;
     background: #5865F2;
-    color: white;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: bold;
-    padding: 6px;
-    border-radius: 6px;
-    transition: opacity 0.2s;
-  }
-
-  .discord-link:hover {
-    opacity: 0.9;
-  }
-
-.discord-container {
-    position: absolute;
-    bottom: 15px;
-    left: 15px;
-    z-index: 50; /* Di atas gambar map tapi di bawah topbar */
-  }
-
-  .discord-btn {
-    width: clamp(35px, 8vw, 45px);
-    height: clamp(35px, 8vw, 45px);
-    background: #5865F2;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    box-shadow: 0 0 15px rgba(88, 101, 242, 0.5);
-    transition: transform 0.2s;
-  }
-
-  .discord-btn:hover { transform: scale(1.1); }
-  .discord-btn img { width: 60%; }
-
-  #discord-mini-box {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 0;
-    width: 160px;
-    background: rgba(15, 31, 29, 0.95);
-    border: 2px solid #5865F2;
-    border-radius: 10px;
-    padding: 10px;
-    display: none; /* Sembunyi awal */
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    font-family: Arial, sans-serif;
-  }
-
-  #discord-mini-box.active {
-    display: block;
-    animation: scaleFadeIn 0.3s ease-out;
-  }
-
-  .discord-header-mini {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    font-weight: bold;
-    color: #fff;
-    margin-bottom: 5px;
-  }
-
-  #discord-mini-box p {
-    font-size: 10px;
-    color: #bbb;
-    margin: 0 0 8px 0;
-  }
-
-  #discord-mini-box a {
-    display: block;
-    background: #5865F2;
-    color: #fff;
-    text-align: center;
+    color: white !important;
     text-decoration: none;
     font-size: 11px;
     font-weight: bold;
-    padding: 5px;
-    border-radius: 4px;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s;
   }
-	  
-  /* Penyesuaian Mobile */
+
+  .discord-link:hover {
+    background: #4752c4;
+  }
+
+  /* Penyesuaian Mobile agar tidak menutupi peta */
   @media (max-width: 480px) {
-    .discord-btn { width: 35px; height: 35px; bottom: 10px; left: 10px; }
-    .discord-btn img { width: 20px; height: 20px; }
-    #discord-box { bottom: 55px; left: 10px; width: 150px; }
+    .discord-btn { bottom: 15px; left: 15px; }
+    #discord-box { bottom: 65px; left: 15px; width: 160px; }
   }
 
   @keyframes fadeIn {
@@ -870,15 +802,16 @@ fetch(SHEETSON_API, {
   });
 
 function toggleDiscordBox(event) {
-      event.stopPropagation(); // Mencegah klik menembus ke map
+      event.stopPropagation(); 
       const discordBox = document.getElementById('discord-box');
-      discordBox.classList.toggle('active');
       
       // Tutup info-box zona jika discord dibuka
       document.getElementById('info-box').classList.remove('active');
+      
+      discordBox.classList.toggle('active');
     }
 
-    // Modifikasi event listener click yang sudah ada untuk menutup Discord box juga
+    // Update Listener Klik Global
     document.addEventListener('click', (e) => {
       const box = document.getElementById('info-box');
       const discordBox = document.getElementById('discord-box');
@@ -887,16 +820,18 @@ function toggleDiscordBox(event) {
       const navMenu = document.getElementById('nav-menu');
       const hamburger = document.getElementById('hamburger');
 
-      if (!box.contains(e.target) && !zone) {
+      // Tutup info-box jika klik di luar
+      if (box.classList.contains('active') && !box.contains(e.target) && !zone) {
         closeInfo();
       }
       
-      // Tutup discord box jika klik di luar box dan tombolnya
-      if (!discordBox.contains(e.target) && !discordBtn) {
+      // Tutup discord box jika klik di luar tombol & boxnya
+      if (discordBox.classList.contains('active') && !discordBox.contains(e.target) && !discordBtn) {
         discordBox.classList.remove('active');
       }
 
-      if (!navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+      // Tutup menu hamburger
+      if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
         closeMenu();
       }
     });
