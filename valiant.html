@@ -11,6 +11,103 @@
         src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js">
 </script>
   <style>
+
+/* Discord Button */
+  .discord-floating-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #5865F2;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 101;
+    box-shadow: 0 0 15px rgba(88, 101, 242, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .discord-floating-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(88, 101, 242, 0.8);
+  }
+
+  .discord-floating-btn img {
+    width: 30px;
+    height: 30px;
+  }
+
+  /* Discord Overlay */
+  #discord-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    display: none; /* Sembunyi secara default */
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+  }
+
+  #discord-overlay.active {
+    display: flex;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .discord-card {
+    background: #1a1a1a;
+    border: 2px solid #5865F2;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    width: min(90%, 350px);
+    box-shadow: 0 0 30px rgba(88, 101, 242, 0.3);
+    position: relative;
+  }
+
+  .discord-card h3 {
+    color: #fff;
+    margin: 15px 0 10px;
+  }
+
+  .discord-card p {
+    color: #ccc;
+    font-size: 14px;
+    margin-bottom: 25px;
+  }
+
+  .btn-join {
+    background: #5865F2;
+    color: white;
+    text-decoration: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    display: inline-block;
+    transition: background 0.3s;
+  }
+
+  .btn-join:hover {
+    background: #4752c4;
+  }
+
+  .close-discord {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    color: #666;
+    cursor: pointer;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+	  
   :root {
     --default-zone-logo-size: 100px;
   }
@@ -442,6 +539,22 @@
       </ul>
     </nav>
 
+<!-- Tombol Discord Bulat -->
+  <div class="discord-floating-btn" id="openDiscord">
+    <img src="https://cdn.prod.website-files.com/6257adef93867e3d0394e366/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" alt="Discord Icon">
+  </div>
+
+  <!-- Overlay Discord -->
+  <div id="discord-overlay">
+    <div class="discord-card">
+      <span class="close-discord" id="closeDiscord">&times;</span>
+      <img src="https://cdn.prod.website-files.com/6257adef93867e3d0394e366/636e0a6a49cf127bf92de1e2_icon_clyde_blurple_RGB.png" width="60" alt="Discord Logo">
+      <h3>Community Server</h3>
+      <p>Joint To Street.NET VRP di Discord.</p>
+      <a href="https://discord.gg/3pGSRugZ5p" target="_blank" class="btn-join">JOIN DISCORD</a>
+    </div>
+  </div>
+	  
     <div class="map-frame">
       <img id="main-map" src="" alt="Main Map" loading="lazy"/>
 
@@ -681,6 +794,27 @@ fetch(SHEETSON_API, {
       );
     }
   });
+
+	  // Kontrol Overlay Discord
+    const openDiscordBtn = document.getElementById('openDiscord');
+    const closeDiscordBtn = document.getElementById('closeDiscord');
+    const discordOverlay = document.getElementById('discord-overlay');
+
+    openDiscordBtn.addEventListener('click', () => {
+      discordOverlay.classList.add('active');
+    });
+
+    closeDiscordBtn.addEventListener('click', () => {
+      discordOverlay.classList.remove('active');
+    });
+
+    // Tutup overlay jika klik di luar box putih
+    discordOverlay.addEventListener('click', (e) => {
+      if (e.target === discordOverlay) {
+        discordOverlay.classList.remove('active');
+      }
+    });
+	  
     </script>
 </body>
 </html>
