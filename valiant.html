@@ -724,67 +724,13 @@
 // Pastikan tidak mendeklarasikan zoneData dua kali
 window.zoneData = window.zoneData || {};
 
-fetch(SHEETSON_API, {
-  headers: {
-    "Authorization": `Bearer ${SHEETSON_KEY}`,
-    "X-Spreadsheet-Id": SPREADSHEET_ID,
-  },
-})
+// Ganti dengan URL raw file data.json lu di GitHub
+// Contoh: https://raw.githubusercontent.com/username/repo/main/data.json
+fetch('https://raw.githubusercontent.com/USER/REPO/main/data.json?v=' + new Date().getTime())
   .then(res => res.json())
-  .then(json => {
-    const data = json.results || json.data || json; // format fleksibel
-    console.log("✅ Data dari Sheetson:", data);
-
-    if (!Array.isArray(data)) {
-      console.error("Response bukan array:", data);
-      return;
-    }
-
-  data.forEach(row => {
-      const zoneId = Number(row.Zone?.replace(/zone\s*/i, "")) || null;
-      if (!zoneId) return;
-
-      let cashFormatted = row.Cash;
-      if (cashFormatted) {
-        cashFormatted = String(cashFormatted).replace(/[^\d]/g, "");
-        const cashNumber = parseInt(cashFormatted, 10) || 0;
-        cashFormatted = "$" + cashNumber.toLocaleString();
-      }
-
-      zoneData[zoneId] = {
-        club: row.Owner || zoneData[zoneId]?.club,
-        logo: row.LogoMap || zoneData[zoneId]?.logo,
-        info: row.LogoInfo || zoneData[zoneId]?.info,
-        mainMap: row.MainMap || zoneData[zoneId]?.mainMap,
-        length: row.Length || zoneData[zoneId]?.length,
-        laps: row.Rounds || zoneData[zoneId]?.laps,
-        record: row.Record || zoneData[zoneId]?.record,
-        cash: cashFormatted || zoneData[zoneId]?.cash, // Menggunakan cashFormatted
-        track: row.Track || zoneData[zoneId]?.track,
-        name: row.Name || zoneData[zoneId]?.name, // Menambahkan kolom Name dari sheet
-      };
-
-      const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-      if (el && row.LogoMap) {
-        el.src = row.LogoMap;
-      }
-    });
-
-    const mainMapRow = data.find(r => r.MainMap);
-    if (mainMapRow) {
-      const mainMapEl = document.querySelector("#main-map");
-      if (mainMapEl) mainMapEl.src = mainMapRow.MainMap;
-    }
-  })
-  .catch(err => {
-    console.error("⚠️ Gagal fetch data dari Sheetson:", err);
-    const mainMapEl = document.querySelector("#main--map");
-    if (mainMapEl) {
-      mainMapEl.insertAdjacentHTML(
-        "afterend",
-        "<p style='color:red'>⚠️ Gagal memuat data dari Sheetson</p>"
-      );
-    }
+  .then(data => {
+    // Lu tinggal akses data.ssrp, data.vrp, atau data.jgrp
+    console.log("Data berhasil dimuat:", data);
   });
 
 function toggleDiscordBox(event) {
