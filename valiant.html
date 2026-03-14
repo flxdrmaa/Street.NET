@@ -723,16 +723,6 @@
 
 // Pastikan tidak mendeklarasikan zoneData dua kali
 window.zoneData = window.zoneData || {};
-
-// Ganti dengan URL raw file data.json lu di GitHub
-// Contoh: https://raw.githubusercontent.com/username/repo/main/data.json
-fetch('https://raw.githubusercontent.com/USER/REPO/main/data.json?v=' + new Date().getTime())
-  .then(res => res.json())
-  .then(data => {
-    // Lu tinggal akses data.ssrp, data.vrp, atau data.jgrp
-    console.log("Data berhasil dimuat:", data);
-  });
-
 function toggleDiscordBox(event) {
       event.stopPropagation(); 
       const discordBox = document.getElementById('discord-box');
