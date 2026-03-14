@@ -727,31 +727,48 @@ fetch(MY_WEB_APP_URL)
     console.log("✅ Data Berhasil Dimuat:", data);
 
     data.forEach(row => {
-      // Ambil angka dari kolom Zone (misal "zone 1" jadi 1)
-      const zoneId = Number(String(row.Zone).replace(/zone\s*/i, "")) || null;
+      // Cari kolom yang mengandung kata 'Zone', 'Owner', dsb (tidak peduli huruf besar/kecil)
+      const getVal = (names) => {
+        const key = Object.keys(row).find(k => names.includes(k.toLowerCase().trim()));
+        return key ? row[key] : null;
+      };
+
+      const zoneRaw = getVal(['zone']);
+      const zoneId = zoneRaw ? Number(String(zoneRaw).replace(/zone\s*/i, "")) : null;
+      
       if (!zoneId) return;
 
-      // Format Cash otomatis ($15,000)
-      let rawCash = String(row.Cash).replace(/[^\d]/g, "");
-      let formattedCash = rawCash ? "$" + parseInt(rawCash).toLocaleString() : "-";
+      // Ambil data dengan nama kolom fleksibel
+      const owner = getVal(['owner', 'controlled by', 'club']);
+      const logoMap = getVal(['logomap', 'logo map', 'logo']);
+      const logoInfo = getVal(['logoinfo', 'logo info', 'info']);
+      const trackImg = getVal(['track', 'trackmap', 'track map']);
+      const trackName = getVal(['name', 'track name']);
+      const length = getVal(['length']);
+      const laps = getVal(['rounds', 'laps']);
+      const record = getVal(['record']);
+      const cash = getVal(['cash']);
+
+      let rawCash = String(cash || "").replace(/[^\d]/g, "");
+      let formattedCash = rawCash ? "$" + parseInt(rawCash).toLocaleString() : (cash || "-");
 
       // Update Object zoneData
       zoneData[zoneId] = {
-        club: row.Owner || "No Owner",
-        logo: row.LogoMap || "",
-        infoLogo: row.LogoInfo || row.LogoMap, // Fallback ke logomap jika logoinfo kosong
-        length: row.Length || "-",
-        laps: row.Rounds || "-",
-        record: row.Record || "-",
+        club: owner || "No Owner",
+        logo: logoMap || "",
+        infoLogo: logoInfo || logoMap,
+        length: length || "-",
+        laps: laps || "-",
+        record: record || "-",
         cash: formattedCash,
-        track: row.Track || "",
-        name: row.Name || "Unknown Track"
+        track: trackImg || "",
+        name: trackName || "Unknown Track"
       };
 
-      // Update Icon di Peta secara real-time
+      // Update Icon di Peta
       const imgEl = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-      if (imgEl && row.LogoMap) {
-        imgEl.src = row.LogoMap;
+      if (imgEl && logoMap) {
+        imgEl.src = logoMap;
       }
     });
 
