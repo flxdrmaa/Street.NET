@@ -717,72 +717,87 @@
     });
 
 // Ganti URL ini dengan URL Web App yang kamu copy tadi
+// 1. URL Web App Google Apps Script kamu
 const MY_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxhlq-sMrCWfdJo4L1cO6Inuvgjk5wgkNaKmmAXBPFJdxqy51cpLc7-x6v4OXoE00LOaQ/exec";
 
+// Gunakan variabel yang sudah ada
 window.zoneData = window.zoneData || {};
 
 fetch(MY_WEB_APP_URL)
   .then(res => res.json())
   .then(data => {
     console.log("✅ Data Berhasil Dimuat:", data);
+    console.log("🔍 Nama kolom yang terdeteksi di Sheet:", Object.keys(data[0]));
 
     data.forEach(row => {
-      // Cari kolom yang mengandung kata 'Zone', 'Owner', dsb (tidak peduli huruf besar/kecil)
+      // Fungsi pencari kolom yang sangat fleksibel (tidak peduli spasi atau huruf besar/kecil)
       const getVal = (names) => {
-        const key = Object.keys(row).find(k => names.includes(k.toLowerCase().trim()));
+        const key = Object.keys(row).find(k => 
+          names.includes(k.toLowerCase().replace(/\s/g, '').trim())
+        );
         return key ? row[key] : null;
       };
 
+      // Deteksi ID Zone (Mencari kolom bernama 'zone')
       const zoneRaw = getVal(['zone']);
       const zoneId = zoneRaw ? Number(String(zoneRaw).replace(/zone\s*/i, "")) : null;
       
       if (!zoneId) return;
 
-      // Ambil data dengan nama kolom fleksibel
-      const owner = getVal(['owner', 'controlled by', 'club']);
-      const logoMap = getVal(['logomap', 'logo map', 'logo']);
-      const logoInfo = getVal(['logoinfo', 'logo info', 'info']);
-      const trackImg = getVal(['track', 'trackmap', 'track map']);
-      const trackName = getVal(['name', 'track name']);
+      // Ambil data dari kolom-kolom Sheet
+      const owner = getVal(['owner', 'controlledby', 'club']);
+      const logoMap = getVal(['logomap', 'logo']);
+      const logoInfo = getVal(['logoinfo', 'info']);
+      const trackImg = getVal(['track', 'trackmap']);
+      const trackName = getVal(['name', 'trackname']);
       const length = getVal(['length']);
       const laps = getVal(['rounds', 'laps']);
       const record = getVal(['record']);
       const cash = getVal(['cash']);
 
+      // Format Uang
       let rawCash = String(cash || "").replace(/[^\d]/g, "");
       let formattedCash = rawCash ? "$" + parseInt(rawCash).toLocaleString() : (cash || "-");
 
-      // Update Object zoneData
+      // UPDATE DATA (Menimpa data hardcoded dengan data dari Sheet)
       zoneData[zoneId] = {
-        club: owner || "No Owner",
-        logo: logoMap || "",
-        infoLogo: logoInfo || logoMap,
-        length: length || "-",
-        laps: laps || "-",
-        record: record || "-",
-        cash: formattedCash,
-        track: trackImg || "",
-        name: trackName || "Unknown Track"
+        club: owner || (zoneData[zoneId] ? zoneData[zoneId].club : "No Owner"),
+        logo: logoMap || (zoneData[zoneId] ? zoneData[zoneId].logo : ""),
+        infoLogo: logoInfo || logoMap || (zoneData[zoneId] ? zoneData[zoneId].logo : ""),
+        length: length || (zoneData[zoneId] ? zoneData[zoneId].length : "-"),
+        laps: laps || (zoneData[zoneId] ? zoneData[zoneId].laps : "-"),
+        record: record || (zoneData[zoneId] ? zoneData[zoneId].record : "-"),
+        cash: formattedCash || (zoneData[zoneId] ? zoneData[zoneId].cash : "-"),
+        track: trackImg || (zoneData[zoneId] ? zoneData[zoneId].track : ""),
+        name: trackName || (zoneData[zoneId] ? zoneData[zoneId].name : "Unknown")
       };
 
-      // Update Icon di Peta
-      const imgEl = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
-      if (imgEl && logoMap) {
-        imgEl.src = logoMap;
-      }
+      // UPDATE LOGO DI PETA
+      // Mencari div zone berdasarkan ID-nya agar lebih akurat
+      const allZones = document.querySelectorAll('.zone');
+      allZones.forEach(z => {
+        if (z.getAttribute('onclick') === `showInfo(${zoneId})`) {
+          const imgEl = z.querySelector('img');
+          if (imgEl && logoMap) {
+            console.log(`Updating Zone ${zoneId} with logo: ${logoMap}`);
+            imgEl.src = logoMap;
+          }
+        }
+      });
     });
 
-    // Update Main Map jika ada di baris pertama
-    if (data[0] && data[0].MainMap) {
+    // Update Main Map jika ada
+    const mainMapCol = Object.keys(data[0]).find(k => k.toLowerCase().includes('mainmap'));
+    if (mainMapCol && data[0][mainMapCol]) {
       const mainMapEl = document.querySelector("#main-map");
-      if (mainMapEl) mainMapEl.src = data[0].MainMap;
+      if (mainMapEl) mainMapEl.src = data[0][mainMapCol];
     }
   })
   .catch(err => {
     console.error("⚠️ Gagal Fetch Data:", err);
   });
 
-// Update fungsi showInfo sedikit agar menggunakan logo yang benar
+// Update fungsi showInfo agar mengambil data terbaru dari variabel zoneData
 function showInfo(id) {
   const info = zoneData[id];
   if (!info) return;
@@ -791,7 +806,9 @@ function showInfo(id) {
   const infoLogoSize = zone?.dataset.infoLogoSize || '70px';
 
   document.getElementById('info-logo').style.setProperty('--info-box-logo-size', infoLogoSize);
-  document.getElementById('info-logo').src = info.infoLogo || info.logo; // Gunakan logo info
+  
+  // Gunakan infoLogo jika ada, jika tidak gunakan logo biasa
+  document.getElementById('info-logo').src = info.infoLogo || info.logo;
   document.getElementById('info-club').textContent = info.club;
   document.getElementById('info-track-map').src = info.track;
   document.getElementById('info-track-name').textContent = info.name;
@@ -804,37 +821,33 @@ function showInfo(id) {
   box.classList.add('active');
 }
 
-// Pastikan tidak mendeklarasikan zoneData dua kali
-window.zoneData = window.zoneData || {};
+// Fungsi Discord & Menu (Tetap sama)
 function toggleDiscordBox(event) {
-      event.stopPropagation(); 
-      const discordBox = document.getElementById('discord-box');
-      document.getElementById('info-box').classList.remove('active');
-      discordBox.classList.toggle('active');
-    }
+  event.stopPropagation(); 
+  const discordBox = document.getElementById('discord-box');
+  document.getElementById('info-box').classList.remove('active');
+  discordBox.classList.toggle('active');
+}
 
-    // Klik Global untuk menutup overlay
-    document.addEventListener('click', (e) => {
-      const box = document.getElementById('info-box');
-      const discordBox = document.getElementById('discord-box');
-      const zone = e.target.closest('.zone');
-      const discordBtn = e.target.closest('.discord-btn');
-      const navMenu = document.getElementById('nav-menu');
-      const hamburger = document.getElementById('hamburger');
+document.addEventListener('click', (e) => {
+  const box = document.getElementById('info-box');
+  const discordBox = document.getElementById('discord-box');
+  const zone = e.target.closest('.zone');
+  const discordBtn = e.target.closest('.discord-btn');
+  const navMenu = document.getElementById('nav-menu');
+  const hamburger = document.getElementById('hamburger');
 
-      if (box.classList.contains('active') && !box.contains(e.target) && !zone) {
-        closeInfo();
-      }
-      
-      if (discordBox.classList.contains('active') && !discordBox.contains(e.target) && !discordBtn) {
-        discordBox.classList.remove('active');
-      }
+  if (box.classList.contains('active') && !box.contains(e.target) && !zone) {
+    closeInfo();
+  }
+  if (discordBox.classList.contains('active') && !discordBox.contains(e.target) && !discordBtn) {
+    discordBox.classList.remove('active');
+  }
+  if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+    closeMenu();
+  }
+});
 
-      if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
-        closeMenu();
-      }
-    });
-	  
     </script>
 </body>
 </html>
