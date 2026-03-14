@@ -716,10 +716,76 @@
       }
     });
 
-// 🔧 Konfigurasi Sheetson
-    const SHEETSON_API = "https://api.sheetson.com/v2/sheets/Sheet1";
-    const SHEETSON_KEY = "gzsonqOrsAPCK5AqX9uhSdYuFHwiwO7MH_B7VuHhGK8bFF78JjWo9ORbWWc";
-    const SPREADSHEET_ID = "1jcveWRqLhG_Ho4beVmsU_wEVfkGsfKSivdJnqjxp-pM";
+// Ganti URL ini dengan URL Web App yang kamu copy tadi
+const MY_WEB_APP_URL = "ISI_URL_WEB_APP_KAMU_DISINI";
+
+window.zoneData = window.zoneData || {};
+
+fetch(MY_WEB_APP_URL)
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ Data Berhasil Dimuat:", data);
+
+    data.forEach(row => {
+      // Ambil angka dari kolom Zone (misal "zone 1" jadi 1)
+      const zoneId = Number(String(row.Zone).replace(/zone\s*/i, "")) || null;
+      if (!zoneId) return;
+
+      // Format Cash otomatis ($15,000)
+      let rawCash = String(row.Cash).replace(/[^\d]/g, "");
+      let formattedCash = rawCash ? "$" + parseInt(rawCash).toLocaleString() : "-";
+
+      // Update Object zoneData
+      zoneData[zoneId] = {
+        club: row.Owner || "No Owner",
+        logo: row.LogoMap || "",
+        infoLogo: row.LogoInfo || row.LogoMap, // Fallback ke logomap jika logoinfo kosong
+        length: row.Length || "-",
+        laps: row.Rounds || "-",
+        record: row.Record || "-",
+        cash: formattedCash,
+        track: row.Track || "",
+        name: row.Name || "Unknown Track"
+      };
+
+      // Update Icon di Peta secara real-time
+      const imgEl = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
+      if (imgEl && row.LogoMap) {
+        imgEl.src = row.LogoMap;
+      }
+    });
+
+    // Update Main Map jika ada di baris pertama
+    if (data[0] && data[0].MainMap) {
+      const mainMapEl = document.querySelector("#main-map");
+      if (mainMapEl) mainMapEl.src = data[0].MainMap;
+    }
+  })
+  .catch(err => {
+    console.error("⚠️ Gagal Fetch Data:", err);
+  });
+
+// Update fungsi showInfo sedikit agar menggunakan logo yang benar
+function showInfo(id) {
+  const info = zoneData[id];
+  if (!info) return;
+
+  const zone = document.querySelector(`.zone[onclick="showInfo(${id})"]`);
+  const infoLogoSize = zone?.dataset.infoLogoSize || '70px';
+
+  document.getElementById('info-logo').style.setProperty('--info-box-logo-size', infoLogoSize);
+  document.getElementById('info-logo').src = info.infoLogo || info.logo; // Gunakan logo info
+  document.getElementById('info-club').textContent = info.club;
+  document.getElementById('info-track-map').src = info.track;
+  document.getElementById('info-track-name').textContent = info.name;
+  document.getElementById('info-length').textContent = info.length;
+  document.getElementById('info-laps').textContent = info.laps;
+  document.getElementById('info-record').textContent = info.record;
+  document.getElementById('info-cash').textContent = info.cash;
+
+  const box = document.getElementById('info-box');
+  box.classList.add('active');
+}
 
 // Pastikan tidak mendeklarasikan zoneData dua kali
 window.zoneData = window.zoneData || {};
