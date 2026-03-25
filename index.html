@@ -720,87 +720,138 @@
       }
     });
 
-// 🔧 Ambil data langsung dari Google Sheet (tanpa API)
-const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSICZv_BBYeiqqQFNbeCZuBq5CryYu-8w6s0CeRt4GGq-gWayrwHCMxBp5zARid-dv6DH0a0og3EQfF/pub?gid=0&single=true&output=csv";
+// Ganti URL ini dengan URL Web App yang kamu copy tadi
+// 1. URL Web App Google Apps Script kamu
+const MY_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwa7yCtUBt8Uy3RwM1lGDcQhf-91WhMjghTdasuQ4DdNkIdZ3EgDLrz-Q1-AjQAwg6EqQ/exec";
 
-fetch(SHEET_URL)
-.then(res => res.text())
-.then(csv => {
+// Gunakan variabel yang sudah ada
+window.zoneData = window.zoneData || {};
 
-  const rows = csv.split("\n").slice(1);
+fetch(MY_WEB_APP_URL)
+  .then(res => res.json())
+  .then(data => {
+    console.log("✅ Data Berhasil Dimuat:", data);
+    console.log("🔍 Nama kolom yang terdeteksi di Sheet:", Object.keys(data[0]));
 
-  rows.forEach(row => {
+    data.forEach(row => {
+      // Fungsi pencari kolom yang sangat fleksibel (tidak peduli spasi atau huruf besar/kecil)
+      const getVal = (names) => {
+        const key = Object.keys(row).find(k => 
+          names.includes(k.toLowerCase().replace(/\s/g, '').trim())
+        );
+        return key ? row[key] : null;
+      };
 
-    const col = row.split(",");
+      // Deteksi ID Zone (Mencari kolom bernama 'zone')
+      const zoneRaw = getVal(['zone']);
+      const zoneId = zoneRaw ? Number(String(zoneRaw).replace(/zone\s*/i, "")) : null;
+      
+      if (!zoneId) return;
 
-    const zoneId = Number(col[0]?.replace(/zone\s*/i,""));
-    if(!zoneId) return;
+      // Ambil data dari kolom-kolom Sheet
+      const owner = getVal(['owner', 'controlledby', 'club']);
+      const logoMap = getVal(['logomap', 'logo']);
+      const logoInfo = getVal(['logoinfo', 'info']);
+      const trackImg = getVal(['track', 'trackmap']);
+      const trackName = getVal(['name', 'trackname']);
+      const length = getVal(['length']);
+      const laps = getVal(['rounds', 'laps']);
+      const record = getVal(['record']);
+      const cash = getVal(['cash']);
 
-    zoneData[zoneId] = {
-      club: col[1],
-      logo: col[2],
-      info: col[3],
-      length: col[4],
-      laps: col[5],
-      record: col[6],
-      cash: col[7],
-      track: col[8],
-      name: col[9]
-    };
+      // Format Uang
+      let rawCash = String(cash || "").replace(/[^\d]/g, "");
+      let formattedCash = rawCash ? "$" + parseInt(rawCash).toLocaleString() : (cash || "-");
 
-    const el = document.querySelector(`.zone[onclick="showInfo(${zoneId})"] img`);
+      // UPDATE DATA (Menimpa data hardcoded dengan data dari Sheet)
+      zoneData[zoneId] = {
+        club: owner || (zoneData[zoneId] ? zoneData[zoneId].club : "No Owner"),
+        logo: logoMap || (zoneData[zoneId] ? zoneData[zoneId].logo : ""),
+        infoLogo: logoInfo || logoMap || (zoneData[zoneId] ? zoneData[zoneId].logo : ""),
+        length: length || (zoneData[zoneId] ? zoneData[zoneId].length : "-"),
+        laps: laps || (zoneData[zoneId] ? zoneData[zoneId].laps : "-"),
+        record: record || (zoneData[zoneId] ? zoneData[zoneId].record : "-"),
+        cash: formattedCash || (zoneData[zoneId] ? zoneData[zoneId].cash : "-"),
+        track: trackImg || (zoneData[zoneId] ? zoneData[zoneId].track : ""),
+        name: trackName || (zoneData[zoneId] ? zoneData[zoneId].name : "Unknown")
+      };
 
-    if(el && col[2]){
-      el.src = col[2];
+      // UPDATE LOGO DI PETA
+      // Mencari div zone berdasarkan ID-nya agar lebih akurat
+      const allZones = document.querySelectorAll('.zone');
+      allZones.forEach(z => {
+        if (z.getAttribute('onclick') === `showInfo(${zoneId})`) {
+          const imgEl = z.querySelector('img');
+          if (imgEl && logoMap) {
+            console.log(`Updating Zone ${zoneId} with logo: ${logoMap}`);
+            imgEl.src = logoMap;
+          }
+        }
+      });
+    });
+
+    // Update Main Map jika ada
+    const mainMapCol = Object.keys(data[0]).find(k => k.toLowerCase().includes('mainmap'));
+    if (mainMapCol && data[0][mainMapCol]) {
+      const mainMapEl = document.querySelector("#main-map");
+      if (mainMapEl) mainMapEl.src = data[0][mainMapCol];
     }
-
+  })
+  .catch(err => {
+    console.error("⚠️ Gagal Fetch Data:", err);
   });
 
-})
-.catch(err=>{
-  console.error("Gagal ambil data sheet:",err);
+// Update fungsi showInfo agar mengambil data terbaru dari variabel zoneData
+function showInfo(id) {
+  const info = zoneData[id];
+  if (!info) return;
+
+  const zone = document.querySelector(`.zone[onclick="showInfo(${id})"]`);
+  const infoLogoSize = zone?.dataset.infoLogoSize || '70px';
+
+  document.getElementById('info-logo').style.setProperty('--info-box-logo-size', infoLogoSize);
+  
+  // Gunakan infoLogo jika ada, jika tidak gunakan logo biasa
+  document.getElementById('info-logo').src = info.infoLogo || info.logo;
+  document.getElementById('info-club').textContent = info.club;
+  document.getElementById('info-track-map').src = info.track;
+  document.getElementById('info-track-name').textContent = info.name;
+  document.getElementById('info-length').textContent = info.length;
+  document.getElementById('info-laps').textContent = info.laps;
+  document.getElementById('info-record').textContent = info.record;
+  document.getElementById('info-cash').textContent = info.cash;
+
+  const box = document.getElementById('info-box');
+  box.classList.add('active');
+}
+
+// Fungsi Discord & Menu (Tetap sama)
+function toggleDiscordBox(event) {
+  event.stopPropagation(); 
+  const discordBox = document.getElementById('discord-box');
+  document.getElementById('info-box').classList.remove('active');
+  discordBox.classList.toggle('active');
+}
+
+document.addEventListener('click', (e) => {
+  const box = document.getElementById('info-box');
+  const discordBox = document.getElementById('discord-box');
+  const zone = e.target.closest('.zone');
+  const discordBtn = e.target.closest('.discord-btn');
+  const navMenu = document.getElementById('nav-menu');
+  const hamburger = document.getElementById('hamburger');
+
+  if (box.classList.contains('active') && !box.contains(e.target) && !zone) {
+    closeInfo();
+  }
+  if (discordBox.classList.contains('active') && !discordBox.contains(e.target) && !discordBtn) {
+    discordBox.classList.remove('active');
+  }
+  if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
+    closeMenu();
+  }
 });
 
-function toggleDiscordBox(event) {
-      event.stopPropagation(); 
-      const discordBox = document.getElementById('discord-box');
-      document.getElementById('info-box').classList.remove('active');
-      discordBox.classList.toggle('active');
-    }
-
-    // Klik Global untuk menutup overlay
-    document.addEventListener('click', (e) => {
-      const box = document.getElementById('info-box');
-      const discordBox = document.getElementById('discord-box');
-      const zone = e.target.closest('.zone');
-      const discordBtn = e.target.closest('.discord-btn');
-      const navMenu = document.getElementById('nav-menu');
-      const hamburger = document.getElementById('hamburger');
-
-      if (box.classList.contains('active') && !box.contains(e.target) && !zone) {
-        closeInfo();
-      }
-      
-      if (discordBox.classList.contains('active') && !discordBox.contains(e.target) && !discordBtn) {
-        discordBox.classList.remove('active');
-      }
-
-      if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !hamburger.contains(e.target)) {
-        closeMenu();
-      }
-    });
-	  
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
